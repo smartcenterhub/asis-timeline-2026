@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>런칭 12주 타임라인 · ASISTOBE</title>
+<title>런칭 타임라인 · ASISTOBE</title>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
   :root{
@@ -34,10 +34,10 @@
   .synced .dot{width:7px;height:7px;border-radius:50%;background:#15B86A}
 
   .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:22px 0 8px}
-  .datebox,.sortbox{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);
+  .sortbox{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);
     border-radius:var(--r-sm);padding:10px 14px;box-shadow:var(--shadow)}
-  .datebox label,.sortbox label{font-size:13px;font-weight:700;color:var(--sub)}
-  .datebox input,.sortbox select{border:none;font-family:inherit;font-size:14px;font-weight:700;color:var(--ink);background:transparent;outline:none;cursor:pointer}
+  .sortbox label{font-size:13px;font-weight:700;color:var(--sub)}
+  .sortbox select{border:none;font-family:inherit;font-size:14px;font-weight:700;color:var(--ink);background:transparent;outline:none;cursor:pointer}
   .addbtn{margin-left:auto;font-family:inherit;font-size:14px;font-weight:700;color:#fff;background:var(--primary);
     border:none;border-radius:var(--r-sm);padding:11px 18px;cursor:pointer;box-shadow:var(--shadow);transition:.15s}
   .addbtn:active{transform:scale(.96)}
@@ -59,8 +59,8 @@
   .addcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;
     margin-top:14px;box-shadow:var(--shadow);display:none}
   .addcard.open{display:block}
-  .addgrid{display:grid;grid-template-columns:2fr 1fr 1fr .8fr .8fr auto;gap:10px;align-items:end}
-  @media(max-width:720px){.addgrid{grid-template-columns:1fr 1fr}}
+  .fldgrid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.1fr 1.1fr .8fr auto;gap:10px;align-items:end}
+  @media(max-width:760px){.fldgrid{grid-template-columns:1fr 1fr}}
   .fld{display:flex;flex-direction:column;gap:5px}
   .fld label{font-size:12px;font-weight:700;color:var(--hint)}
   .fld input,.fld select{font-family:inherit;font-size:14px;font-weight:600;color:var(--ink);background:var(--bg);
@@ -68,6 +68,8 @@
   .fld input:focus,.fld select:focus{border-color:var(--primary)}
   .savebtn{font-family:inherit;font-size:14px;font-weight:700;color:#fff;background:var(--primary);border:none;
     border-radius:10px;padding:10px 18px;cursor:pointer;height:38px}
+  .cancelbtn{font-family:inherit;font-size:14px;font-weight:700;color:var(--sub);background:var(--bg);
+    border:1px solid var(--line);border-radius:10px;padding:10px 18px;cursor:pointer;height:38px}
 
   .filters{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 14px}
   .chip{font-family:inherit;font-size:13.5px;font-weight:700;padding:9px 16px;border-radius:999px;
@@ -86,18 +88,15 @@
   .gscroll{overflow-x:auto;margin:0 -4px;padding:0 4px}
   .gantt{min-width:760px}
   .grow{display:grid;grid-template-columns:200px 1fr;align-items:center}
-  .ghead .track{display:grid;grid-template-columns:repeat(12,1fr)}
-  .ghead .wc{text-align:center;padding:0 0 10px}
-  .ghead .wc .wk{font-size:12px;font-weight:800;color:var(--sub)}
-  .ghead .wc .dt{font-size:10.5px;font-weight:600;color:var(--hint);margin-top:1px}
+  .ghead .htrack{display:grid}
+  .ghead .wc{text-align:center;padding:0 0 10px;font-size:11px;font-weight:700;color:var(--sub);border-left:1px solid var(--line)}
   .glabel{font-size:13.5px;font-weight:600;padding:7px 12px 7px 0;display:flex;align-items:center;gap:8px;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .dot8{width:8px;height:8px;border-radius:3px;flex:none}
   .dot8.t{background:var(--t-bar)} .dot8.b{background:var(--b-bar)} .dot8.p{background:var(--p-bar)} .dot8.c{background:var(--c-bar)}
-  .gtrack{display:grid;grid-template-columns:repeat(12,1fr);position:relative;height:38px;align-items:center;
-    background-image:repeating-linear-gradient(to right,var(--line) 0 1px,transparent 1px calc(100%/12))}
-  .gbar{height:24px;border-radius:8px;display:flex;align-items:center;justify-content:center;
-    font-size:12px;font-weight:800;margin:0 2px;cursor:pointer;transition:.2s}
+  .gtrack{position:relative;height:38px}
+  .gbar{position:absolute;top:7px;height:24px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:800;cursor:pointer;transition:.2s;min-width:10px;box-sizing:border-box;overflow:hidden}
   .gbar.t{background:var(--t-bar);color:#0a4838} .gbar.b{background:var(--b-bar);color:#0b3f8c}
   .gbar.p{background:var(--p-bar);color:#3a338c} .gbar.c{background:var(--c-bar);color:#7a2e12}
   .gbar.mile{box-shadow:inset 0 0 0 2px rgba(0,0,0,.35)}
@@ -123,22 +122,19 @@
   .status[data-s="진행중"]{background:var(--primary-bg);color:var(--primary)}
   .status[data-s="완료"]{background:#E5F8EF;color:#15B86A}
   .status[data-s="지연"]{background:#FFECEC;color:#F04452}
-  .del{font-family:inherit;font-size:16px;font-weight:700;color:var(--hint);background:transparent;border:none;
-    cursor:pointer;padding:4px 8px;border-radius:8px;transition:.15s}
-  .del:hover{background:#FFECEC;color:#F04452}
   .edit{font-family:inherit;font-size:14px;background:transparent;border:none;cursor:pointer;padding:4px 8px;border-radius:8px;transition:.15s}
   .edit:hover{background:var(--primary-bg)}
+  .del{font-family:inherit;font-size:16px;font-weight:700;color:var(--hint);background:transparent;border:none;cursor:pointer;padding:4px 8px;border-radius:8px;transition:.15s}
+  .del:hover{background:#FFECEC;color:#F04452}
   .item.editing{display:block;border-color:var(--primary)}
-  .edit-grid{display:grid;grid-template-columns:1fr 1fr .8fr .8fr;gap:10px;align-items:end}
+  .edit-grid{display:grid;grid-template-columns:1fr 1fr 1.1fr 1.1fr .8fr;gap:10px;align-items:end}
   @media(max-width:560px){.edit-grid{grid-template-columns:1fr 1fr}}
-  .edit-actions{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end}
-  .cancelbtn{font-family:inherit;font-size:14px;font-weight:700;color:var(--sub);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 18px;cursor:pointer;height:38px}
+  .edit-actions{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end;margin-top:4px}
 
   .empty{text-align:center;color:var(--hint);font-size:14px;font-weight:600;padding:40px 0}
   .errbox{background:#FFECEC;border:1px solid #FAD2D2;color:#C0392B;border-radius:var(--r);padding:20px;
     font-size:14px;font-weight:600;margin-top:14px;line-height:1.7}
-  .errbox button{margin-top:10px;font-family:inherit;font-weight:700;background:#F04452;color:#fff;border:none;
-    border-radius:10px;padding:9px 16px;cursor:pointer}
+  .errbox button{margin-top:10px;font-family:inherit;font-weight:700;background:#F04452;color:#fff;border:none;border-radius:10px;padding:9px 16px;cursor:pointer}
 
   #toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);opacity:0;
     background:var(--ink);color:#fff;font-size:13.5px;font-weight:700;padding:12px 20px;border-radius:999px;
@@ -155,21 +151,18 @@
 
   <div class="top">
     <div class="eyebrow">ASISTOBE · 마이크로바이옴 팩클렌저</div>
-    <h1>런칭 12주 타임라인</h1>
-    <p>상태·시작일·작업 추가가 모두 구글 시트에 자동 저장됩니다.</p>
+    <h1>런칭 타임라인</h1>
+    <p>시작일·종료일·기간을 입력하면 서로 맞춰 자동 계산됩니다. 모두 구글 시트에 저장돼요.</p>
     <div class="synced"><span class="dot"></span>구글 시트 연동됨</div>
   </div>
 
   <div class="controls">
-    <div class="datebox">
-      <label>시작일 (1주차 월요일)</label>
-      <input type="date" id="startDate" value="2026-06-08">
-    </div>
     <div class="sortbox">
       <label>정렬</label>
       <select id="sort">
         <option value="start">시작일 순</option>
         <option value="end">종료일 순</option>
+        <option value="dur">기간 순</option>
         <option value="stage">단계별</option>
       </select>
     </div>
@@ -177,16 +170,15 @@
   </div>
 
   <div class="addcard" id="addcard">
-    <div class="addgrid">
+    <div class="fldgrid">
       <div class="fld"><label>작업명</label><input type="text" id="f_name" placeholder="예: 인플루언서 2차 시딩"></div>
       <div class="fld"><label>단계</label>
-        <select id="f_stage">
-          <option>생산·공급</option><option>인증·임상</option><option>콘텐츠·디자인</option><option>마케팅·런칭</option>
-        </select></div>
+        <select id="f_stage"><option>생산·공급</option><option>인증·임상</option><option>콘텐츠·디자인</option><option>마케팅·런칭</option></select></div>
       <div class="fld"><label>유형</label>
         <select id="f_type"><option>진행</option><option>착수</option><option>마일스톤</option></select></div>
-      <div class="fld"><label>시작주차</label><input type="number" id="f_sw" min="1" max="12" value="1"></div>
-      <div class="fld"><label>종료주차</label><input type="number" id="f_ew" min="1" max="12" value="1"></div>
+      <div class="fld"><label>시작일</label><input type="date" id="f_start" value="2026-06-08"></div>
+      <div class="fld"><label>종료일</label><input type="date" id="f_end" value="2026-06-14"></div>
+      <div class="fld"><label>기간(일)</label><input type="number" id="f_dur" min="1" value="7"></div>
       <button class="savebtn" id="doAdd">추가</button>
     </div>
   </div>
@@ -197,96 +189,85 @@
     <div class="bar"><i id="pctBar" style="width:0%"></i></div>
   </div>
 
-  <div class="filters" id="filters">
-    <button class="chip all" data-stage="all" data-on="1">전체</button>
-    <button class="chip t" data-stage="생산·공급" data-on="1">생산·공급</button>
-    <button class="chip b" data-stage="인증·임상" data-on="1">인증·임상</button>
-    <button class="chip p" data-stage="콘텐츠·디자인" data-on="1">콘텐츠·디자인</button>
-    <button class="chip c" data-stage="마케팅·런칭" data-on="1">마케팅·런칭</button>
-  </div>
+  <div class="filters" id="filters"></div>
 
   <div id="errSlot"></div>
 
   <div class="panel">
-    <h2>간트 · 주차별</h2>
+    <h2>간트 · 달력</h2>
     <div class="sub">막대를 클릭하면 상태가 바뀝니다 · ★ 진한 테두리 = 마일스톤</div>
     <div class="gscroll"><div class="gantt" id="gantt"></div></div>
   </div>
 
   <div class="panel">
     <h2>작업 리스트</h2>
-    <div class="sub">상태 버튼 클릭 = 순환 전환 · 담당 입력 후 칸 밖 클릭 = 저장 · ✕ = 삭제</div>
+    <div class="sub">✏️ 수정 · 상태 클릭 = 순환 · 담당 입력 후 칸 밖 클릭 = 저장 · ✕ = 삭제</div>
     <div class="list" id="list"></div>
   </div>
 
-  <footer>ASISTOBE 마이크로바이옴 팩클렌저 · 런칭 12주 타임라인</footer>
+  <footer>ASISTOBE 마이크로바이옴 팩클렌저 · 런칭 타임라인</footer>
 </div>
 <div id="toast"></div>
 
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxf2bo8LQ57Vu6fjPmrVug7JeGdSR3n_3qSjPti5naB1fifFpaFGJohGC_vGFPUFaRV6g/exec';
 const SECRET_KEY = 'olive-asistobe-2026';
-const SC = {"생산·공급":"t","인증·임상":"b","콘텐츠·디자인":"p","마케팅·런칭":"c"};
-const STAGE_ORDER = Object.keys(SC);
+const PAL = ["t","b","p","c"];
+const STAGE_PAL = {"생산":"t","생산·공급":"t","인증·임상":"b","임상":"b","디자인":"p","콘텐츠·디자인":"p","마케팅":"c","마케팅·런칭":"c"};
+const PREF = ["생산","생산·공급","인증·임상","임상","디자인","콘텐츠·디자인","마케팅","마케팅·런칭","런칭 준비"];
+let STAGES = [];
 const STATUSES = ["미착수","진행중","완료","지연"];
+function computeStages(){
+  const set=[]; STATE.tasks.forEach(t=>{ if(t.stage && set.indexOf(t.stage)<0) set.push(t.stage); });
+  set.sort((a,b)=>{ const ia=PREF.indexOf(a),ib=PREF.indexOf(b); return (ia<0?99:ia)-(ib<0?99:ib); });
+  STAGES=set;
+}
+function stageColor(s){ return STAGE_PAL[s] || PAL[((STAGES.indexOf(s))%4+4)%4] || "t"; }
 
-const STATE = { tasks:[], startDate:'2026-06-08', loaded:false };
-const active = new Set(STAGE_ORDER);
+const STATE = { tasks:[], loaded:false };
+const active = new Set();
 let sortKey = "start";
 let editingId = null;
 
 const $ = s=>document.querySelector(s);
-const topbar = $("#topbar"), topfill = $("#topfill");
-let _pending=0, _loadTimer=null;
-function startLoad(){
-  clearInterval(_loadTimer);
-  topbar.classList.add("active");
-  topfill.style.transition="width .2s ease";
-  topfill.style.width="0%";
-  let w=0;
-  _loadTimer=setInterval(()=>{ w+=Math.max(0.5,(90-w)*0.12); if(w>=90){w=90;clearInterval(_loadTimer);} topfill.style.width=w.toFixed(1)+"%"; },80);
-}
-function endLoad(){
-  clearInterval(_loadTimer);
-  topfill.style.width="100%";
-  setTimeout(()=>{ topbar.classList.remove("active"); topfill.style.transition="none"; topfill.style.width="0%"; },280);
-}
+
+// ── loading bar (0→90→100, once) ──
+const topbar=$("#topbar"), topfill=$("#topfill");
+let _pending=0,_loadTimer=null;
+function startLoad(){ clearInterval(_loadTimer); topbar.classList.add("active"); topfill.style.transition="width .2s ease"; topfill.style.width="0%"; let w=0;
+  _loadTimer=setInterval(()=>{ w+=Math.max(0.5,(90-w)*0.12); if(w>=90){w=90;clearInterval(_loadTimer);} topfill.style.width=w.toFixed(1)+"%"; },80); }
+function endLoad(){ clearInterval(_loadTimer); topfill.style.width="100%"; setTimeout(()=>{ topbar.classList.remove("active"); topfill.style.transition="none"; topfill.style.width="0%"; },280); }
 function load(on){ if(on){ _pending++; if(_pending===1) startLoad(); } else { _pending=Math.max(0,_pending-1); if(_pending===0) endLoad(); } }
-function toast(msg, err){ const t=$("#toast"); t.textContent=msg; t.className=(err?"err ":"")+"show"; setTimeout(()=>t.className=t.className.replace("show",""),2200); }
+function toast(msg,err){ const t=$("#toast"); t.textContent=msg; t.className=(err?"err ":"")+"show"; setTimeout(()=>t.className=t.className.replace("show",""),2200); }
 
 // ── API ──
-async function apiGetAll(){
-  const res = await fetch(APPS_SCRIPT_URL + '?action=all');
-  const json = await res.json();
-  if(!json.ok) throw new Error(json.error||'load error');
-  return json.data;
-}
-async function apiPost(payload){
-  const res = await fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify(Object.assign({secret:SECRET_KEY}, payload)) });
-  const json = await res.json();
-  if(!json.ok) throw new Error(json.error||'API error');
-  return json;
-}
+async function apiGetAll(){ const res=await fetch(APPS_SCRIPT_URL+'?action=all'); const j=await res.json(); if(!j.ok) throw new Error(j.error||'load error'); return j.data; }
+async function apiPost(p){ const res=await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify(Object.assign({secret:SECRET_KEY},p))}); const j=await res.json(); if(!j.ok) throw new Error(j.error||'API error'); return j; }
 
 // ── date helpers ──
-function base(){ return new Date(STATE.startDate + 'T00:00:00'); }
-function addD(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
-function weekStart(k){ return addD(base(),(k-1)*7); }
-function tStart(t){ return weekStart(t.sw); }
-function tEnd(t){ return addD(weekStart(t.ew),6); }
-function fmt(d){ return (d.getMonth()+1)+"."+d.getDate(); }
-function fmtSlash(d){ return (d.getMonth()+1)+"/"+d.getDate(); }
+function pIso(s){ return new Date(String(s).slice(0,10)+'T00:00:00'); }
+function fmtISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
+function diffDays(a,b){ return Math.round((b-a)/86400000); }
+function fmtMD(d){ return (d.getMonth()+1)+'.'+d.getDate(); }
+function fmtSlash(d){ return (d.getMonth()+1)+'/'+d.getDate(); }
+function mondayOnBefore(d){ const x=new Date(d); const off=(x.getDay()+6)%7; return addDays(x,-off); }
 
-function norm(row){
-  return { id:row.task_id, stage:row.stage, name:row.name, type:row.type,
-    sw:Number(row.start_week)||1, ew:Number(row.end_week)||1,
-    assignee:row.assignee||'', status:STATUSES.includes(row.status)?row.status:'미착수' };
+function norm(r){
+  let start=String(r.start_date||'').slice(0,10);
+  let end=String(r.end_date||'').slice(0,10);
+  if(!start && end) start=end; if(!end && start) end=start;
+  if(!start && !end){ start='2026-06-08'; end='2026-06-08'; }
+  let dur=Number(r.duration); if(!dur||dur<1) dur=diffDays(pIso(start),pIso(end))+1;
+  return { id:r.task_id, stage:r.stage, name:r.name, type:r.type, start, end, duration:dur,
+    assignee:r.assignee||'', status:STATUSES.includes(r.status)?r.status:'미착수' };
 }
 function visible(){
-  let r = STATE.tasks.filter(t=>active.has(t.stage));
-  if(sortKey==="start") r.sort((a,b)=>a.sw-b.sw||a.ew-b.ew);
-  else if(sortKey==="end") r.sort((a,b)=>a.ew-b.ew||a.sw-b.sw);
-  else r.sort((a,b)=>STAGE_ORDER.indexOf(a.stage)-STAGE_ORDER.indexOf(b.stage)||a.sw-b.sw);
+  let r=STATE.tasks.filter(t=>active.has(t.stage));
+  if(sortKey==="start") r.sort((a,b)=>a.start<b.start?-1:a.start>b.start?1:(a.end<b.end?-1:1));
+  else if(sortKey==="end") r.sort((a,b)=>a.end<b.end?-1:a.end>b.end?1:0);
+  else if(sortKey==="dur") r.sort((a,b)=>b.duration-a.duration);
+  else r.sort((a,b)=>STAGES.indexOf(a.stage)-STAGES.indexOf(b.stage)||(a.start<b.start?-1:1));
   return r;
 }
 
@@ -294,38 +275,64 @@ function renderSummary(){
   const c={"미착수":0,"진행중":0,"완료":0,"지연":0};
   STATE.tasks.forEach(t=>c[t.status]=(c[t.status]||0)+1);
   const cls={"미착수":"todo","진행중":"prog","완료":"done","지연":"delay"};
-  $("#summary").innerHTML = STATUSES.map(s=>`<div class="stat ${cls[s]}"><div class="n">${c[s]}</div><div class="l">${s}</div></div>`).join("");
+  $("#summary").innerHTML=STATUSES.map(s=>`<div class="stat ${cls[s]}"><div class="n">${c[s]}</div><div class="l">${s}</div></div>`).join("");
   const total=STATE.tasks.length, pct=total?Math.round(c["완료"]/total*100):0;
   $("#pctBar").style.width=pct+"%"; $("#pctLabel").textContent="진행률 "+pct+"%"; $("#pctSub").textContent="완료 "+c["완료"]+" / "+total;
 }
+
 function renderGantt(){
   const rows=visible();
-  let head=`<div class="grow ghead"><div></div><div class="track">`;
-  for(let k=1;k<=12;k++) head+=`<div class="wc"><div class="wk">W${k}</div><div class="dt">${fmtSlash(weekStart(k))}</div></div>`;
-  head+=`</div></div>`;
+  if(!rows.length){ $("#gantt").innerHTML=`<div class="empty">표시할 작업이 없습니다.</div>`; return; }
+  let minS=pIso(rows[0].start), maxE=pIso(rows[0].end);
+  rows.forEach(t=>{ const s=pIso(t.start),e=pIso(t.end); if(s<minS)minS=s; if(e>maxE)maxE=e; });
+  const axisStart=mondayOnBefore(minS);
+  let weeks=Math.ceil((diffDays(axisStart,maxE)+1)/7); if(weeks<1) weeks=1;
+  const totalDays=weeks*7;
+  const colpct=100/weeks;
+  let headCells="";
+  for(let i=0;i<weeks;i++) headCells+=`<div class="wc">${fmtSlash(addDays(axisStart,i*7))}</div>`;
+  const head=`<div class="grow ghead"><div></div><div class="htrack" style="grid-template-columns:repeat(${weeks},1fr)">${headCells}</div></div>`;
+  const gridBg=`background-image:repeating-linear-gradient(to right,var(--line) 0 1px,transparent 1px calc(100%/${weeks}))`;
   const body=rows.map(t=>{
-    const sc=SC[t.stage]||"t", mile=t.type==="마일스톤";
-    const bar=`<div class="gbar ${sc}${mile?' mile':''}" style="grid-column:${t.sw}/${t.ew+1}" data-id="${t.id}" title="${t.name} · ${fmt(tStart(t))}~${fmt(tEnd(t))}">${mile?'★':''}</div>`;
-    return `<div class="grow"><div class="glabel"><span class="dot8 ${sc}"></span>${mile?'★ ':''}${t.name}</div><div class="gtrack">${bar}</div></div>`;
+    const sc=stageColor(t.stage), mile=t.type==="마일스톤";
+    const left=diffDays(axisStart,pIso(t.start))/totalDays*100;
+    const width=t.duration/totalDays*100;
+    const bar=`<div class="gbar ${sc}${mile?' mile':''}" style="left:${left}%;width:${width}%" data-id="${t.id}" title="${t.name} · ${t.start} ~ ${t.end} (${t.duration}일)">${mile?'★':''}</div>`;
+    return `<div class="grow"><div class="glabel"><span class="dot8 ${sc}"></span>${mile?'★ ':''}${t.name}</div><div class="gtrack" style="${gridBg}">${bar}</div></div>`;
   }).join("");
   $("#gantt").innerHTML=head+body;
   $("#gantt").querySelectorAll(".gbar").forEach(b=>b.onclick=()=>cycle(b.dataset.id));
 }
-function stageOptions(sel){ return STAGE_ORDER.map(s=>`<option${s===sel?' selected':''}>${s}</option>`).join(''); }
+
+function stageOptions(sel){ return STAGES.map(s=>`<option${s===sel?' selected':''}>${s}</option>`).join(''); }
 function typeOptions(sel){ return ['진행','착수','마일스톤'].map(s=>`<option${s===sel?' selected':''}>${s}</option>`).join(''); }
+
+function renderFilters(){
+  let html=`<button class="chip all" data-stage="all" data-on="${active.size===STAGES.length?'1':'0'}">전체</button>`;
+  STAGES.forEach(s=>{ html+=`<button class="chip ${stageColor(s)}" data-stage="${s}" data-on="${active.has(s)?'1':'0'}">${s}</button>`; });
+  const f=$("#filters"); f.innerHTML=html;
+  f.querySelectorAll(".chip").forEach(ch=>{
+    ch.onclick=()=>{ const st=ch.dataset.stage;
+      if(st==="all"){ const on=ch.dataset.on!=="1"; STAGES.forEach(s=>active[on?"add":"delete"](s)); }
+      else { active.has(st)?active.delete(st):active.add(st); }
+      renderFilters(); renderGantt(); renderList(); };
+  });
+}
+
 function renderList(){
   const rows=visible();
   if(!rows.length){ $("#list").innerHTML=`<div class="empty">표시할 작업이 없습니다.</div>`; return; }
   $("#list").innerHTML=rows.map(t=>{
-    const sc=SC[t.stage]||"t", mile=t.type==="마일스톤";
+    const sc=stageColor(t.stage), mile=t.type==="마일스톤";
     if(t.id===editingId){
       return `<div class="item editing">
+        <div class="fld" style="margin-bottom:10px"><label>작업명</label><input type="text" class="e_name" value="${(t.name||'').replace(/"/g,'&quot;')}"></div>
         <div class="edit-grid">
-          <div class="fld" style="grid-column:1/-1"><label>작업명</label><input type="text" class="e_name" value="${(t.name||'').replace(/"/g,'&quot;')}"></div>
           <div class="fld"><label>단계</label><select class="e_stage">${stageOptions(t.stage)}</select></div>
           <div class="fld"><label>유형</label><select class="e_type">${typeOptions(t.type)}</select></div>
-          <div class="fld"><label>시작주차</label><input type="number" class="e_sw" min="1" max="12" value="${t.sw}"></div>
-          <div class="fld"><label>종료주차</label><input type="number" class="e_ew" min="1" max="12" value="${t.ew}"></div>
+          <div class="fld"><label>시작일</label><input type="date" class="e_start" value="${t.start}"></div>
+          <div class="fld"><label>종료일</label><input type="date" class="e_end" value="${t.end}"></div>
+          <div class="fld"><label>기간(일)</label><input type="number" class="e_dur" min="1" value="${t.duration}"></div>
           <div class="edit-actions">
             <button class="cancelbtn e_cancel">취소</button>
             <button class="savebtn e_save" data-id="${t.id}">저장</button>
@@ -335,7 +342,7 @@ function renderList(){
     return `<div class="item">
       <span class="badge ${sc}">${t.stage}</span>
       <div class="body"><div class="name">${mile?'<span class="star">★</span>':''}${t.name}</div>
-        <div class="meta"><span>${fmt(tStart(t))} – ${fmt(tEnd(t))} · W${t.sw}${t.ew!==t.sw?'–W'+t.ew:''} · ${t.type}</span>
+        <div class="meta"><span>${t.start} – ${t.end} · ${t.duration}일 · ${t.type}</span>
         <input class="asg" placeholder="담당" value="${(t.assignee||'').replace(/"/g,'&quot;')}" data-id="${t.id}"></div></div>
       <div class="actions">
         <button class="status" data-s="${t.status}" data-id="${t.id}">${t.status}</button>
@@ -348,12 +355,21 @@ function renderList(){
   $("#list").querySelectorAll(".edit").forEach(b=>b.onclick=()=>startEdit(b.dataset.id));
   $("#list").querySelectorAll(".e_save").forEach(b=>b.onclick=()=>saveEdit(b.dataset.id));
   $("#list").querySelectorAll(".e_cancel").forEach(b=>b.onclick=()=>cancelEdit());
-  $("#list").querySelectorAll(".asg").forEach(inp=>{
-    inp.onblur=()=>saveAssignee(inp.dataset.id, inp.value.trim());
-    inp.onkeydown=e=>{ if(e.key==='Enter') inp.blur(); };
-  });
-  const ne=$("#list").querySelector(".e_name"); if(ne){ ne.focus(); ne.setSelectionRange(ne.value.length,ne.value.length); }
+  $("#list").querySelectorAll(".asg").forEach(inp=>{ inp.onblur=()=>saveAssignee(inp.dataset.id,inp.value.trim()); inp.onkeydown=e=>{ if(e.key==='Enter') inp.blur(); }; });
+  bindLinks($("#list .e_start"),$("#list .e_end"),$("#list .e_dur"));
+  const ne=$("#list .e_name"); if(ne){ ne.focus(); ne.setSelectionRange(ne.value.length,ne.value.length); }
 }
+function renderAll(){ renderSummary(); renderGantt(); renderList(); }
+
+// ── start/end/duration linkage ──
+function bindLinks(s,e,d){
+  if(!s||!e||!d) return;
+  s.onchange=()=>{ const dur=Math.max(1,Number(d.value)||1); e.value=fmtISO(addDays(pIso(s.value),dur-1)); };
+  d.onchange=()=>{ let dur=Math.max(1,Number(d.value)||1); d.value=dur; e.value=fmtISO(addDays(pIso(s.value),dur-1)); };
+  e.onchange=()=>{ const sd=pIso(s.value), ed=pIso(e.value); if(ed<sd){ s.value=e.value; d.value=1; } else { d.value=diffDays(sd,ed)+1; } };
+}
+
+// ── actions ──
 function startEdit(id){ editingId=id; renderList(); }
 function cancelEdit(){ editingId=null; renderList(); }
 async function saveEdit(id){
@@ -362,106 +378,67 @@ async function saveEdit(id){
   const name=box.querySelector(".e_name").value.trim();
   const stage=box.querySelector(".e_stage").value;
   const type=box.querySelector(".e_type").value;
-  const sw=Number(box.querySelector(".e_sw").value)||1;
-  const ew=Number(box.querySelector(".e_ew").value)||1;
-  if(!name){ toast('작업명을 입력하세요', true); return; }
-  if(sw<1||sw>12||ew<1||ew>12||ew<sw){ toast('주차를 확인하세요 (1~12, 시작 ≤ 종료)', true); return; }
-  const prev={stage:t.stage,name:t.name,type:t.type,sw:t.sw,ew:t.ew};
-  Object.assign(t,{stage,name,type,sw,ew});
-  editingId=null; renderAll();
-  load(true);
-  try{ await apiPost({action:'update', sheet:'tasks', id, data:{stage,name,type,start_week:sw,end_week:ew}}); toast('✓ 수정 저장'); }
-  catch(err){ Object.assign(t,prev); renderAll(); toast('저장 실패: '+err.message, true); }
+  const start=box.querySelector(".e_start").value;
+  let dur=Math.max(1,Number(box.querySelector(".e_dur").value)||1);
+  if(!name){ toast('작업명을 입력하세요',true); return; }
+  const end=fmtISO(addDays(pIso(start),dur-1));
+  const prev={stage:t.stage,name:t.name,type:t.type,start:t.start,end:t.end,duration:t.duration};
+  Object.assign(t,{stage,name,type,start,end,duration:dur});
+  editingId=null; renderAll(); load(true);
+  try{ await apiPost({action:'update',sheet:'tasks',id,data:{stage,name,type,start_date:start,end_date:end,duration:dur}}); toast('✓ 수정 저장'); }
+  catch(err){ Object.assign(t,prev); renderAll(); toast('저장 실패: '+err.message,true); }
   finally{ load(false); }
 }
-function renderAll(){ renderSummary(); renderGantt(); renderList(); }
-
-// ── actions (optimistic + save) ──
 async function cycle(id){
   const t=STATE.tasks.find(x=>x.id===id); if(!t) return;
-  const prev=t.status;
-  t.status=STATUSES[(STATUSES.indexOf(t.status)+1)%4];
-  renderSummary(); renderGantt(); renderList();
-  load(true);
-  try{ await apiPost({action:'update', sheet:'tasks', id, data:{status:t.status}}); toast('✓ 저장됨'); }
-  catch(err){ t.status=prev; renderSummary(); renderGantt(); renderList(); toast('저장 실패: '+err.message, true); }
+  const prev=t.status; t.status=STATUSES[(STATUSES.indexOf(t.status)+1)%4];
+  renderSummary(); renderGantt(); renderList(); load(true);
+  try{ await apiPost({action:'update',sheet:'tasks',id,data:{status:t.status}}); toast('✓ 저장됨'); }
+  catch(err){ t.status=prev; renderSummary(); renderGantt(); renderList(); toast('저장 실패: '+err.message,true); }
   finally{ load(false); }
 }
-async function saveAssignee(id, val){
-  const t=STATE.tasks.find(x=>x.id===id); if(!t || t.assignee===val) return;
-  const prev=t.assignee; t.assignee=val;
-  load(true);
-  try{ await apiPost({action:'update', sheet:'tasks', id, data:{assignee:val}}); toast('✓ 담당 저장'); }
-  catch(err){ t.assignee=prev; renderList(); toast('저장 실패: '+err.message, true); }
+async function saveAssignee(id,val){
+  const t=STATE.tasks.find(x=>x.id===id); if(!t||t.assignee===val) return;
+  const prev=t.assignee; t.assignee=val; load(true);
+  try{ await apiPost({action:'update',sheet:'tasks',id,data:{assignee:val}}); toast('✓ 담당 저장'); }
+  catch(err){ t.assignee=prev; renderList(); toast('저장 실패: '+err.message,true); }
   finally{ load(false); }
 }
 async function removeTask(id){
   const t=STATE.tasks.find(x=>x.id===id); if(!t) return;
   if(!confirm('"'+t.name+'" 작업을 삭제할까요?')) return;
-  const idx=STATE.tasks.indexOf(t);
-  STATE.tasks.splice(idx,1); renderAll();
-  load(true);
-  try{ await apiPost({action:'delete', sheet:'tasks', id}); toast('✓ 삭제됨'); }
-  catch(err){ STATE.tasks.splice(idx,0,t); renderAll(); toast('삭제 실패: '+err.message, true); }
+  const idx=STATE.tasks.indexOf(t); STATE.tasks.splice(idx,1); renderAll(); load(true);
+  try{ await apiPost({action:'delete',sheet:'tasks',id}); toast('✓ 삭제됨'); }
+  catch(err){ STATE.tasks.splice(idx,0,t); renderAll(); toast('삭제 실패: '+err.message,true); }
   finally{ load(false); }
 }
 async function addTask(){
   const name=$("#f_name").value.trim();
-  if(!name){ toast('작업명을 입력하세요', true); return; }
-  const data={ stage:$("#f_stage").value, name, type:$("#f_type").value,
-    start_week:Number($("#f_sw").value)||1, end_week:Number($("#f_ew").value)||1,
-    assignee:'', status:'미착수', note:'' };
+  if(!name){ toast('작업명을 입력하세요',true); return; }
+  const start=$("#f_start").value; let dur=Math.max(1,Number($("#f_dur").value)||1);
+  const end=fmtISO(addDays(pIso(start),dur-1));
+  const data={ stage:$("#f_stage").value, name, type:$("#f_type").value, start_date:start, end_date:end, duration:dur, assignee:'', status:'미착수', note:'' };
   load(true);
-  try{
-    const res=await apiPost({action:'create', sheet:'tasks', data});
-    STATE.tasks.push(norm(res.data));
-    $("#f_name").value=''; $("#addcard").classList.remove('open');
-    renderAll(); toast('✓ 작업 추가됨');
-  }catch(err){ toast('추가 실패: '+err.message, true); }
-  finally{ load(false); }
-}
-async function saveStartDate(val){
-  const prev=STATE.startDate; STATE.startDate=val; renderAll();
-  load(true);
-  try{ await apiPost({action:'update', sheet:'settings', id:'start_date', data:{value:val}}); toast('✓ 시작일 저장'); }
-  catch(err){ STATE.startDate=prev; $("#startDate").value=prev; renderAll(); toast('저장 실패: '+err.message, true); }
+  try{ const res=await apiPost({action:'create',sheet:'tasks',data}); STATE.tasks.push(norm(res.data)); $("#f_name").value=''; $("#addcard").classList.remove('open'); renderAll(); toast('✓ 작업 추가됨'); }
+  catch(err){ toast('추가 실패: '+err.message,true); }
   finally{ load(false); }
 }
 
 // ── events ──
-$("#startDate").onchange=e=>saveStartDate(e.target.value);
 $("#sort").onchange=e=>{ sortKey=e.target.value; renderGantt(); renderList(); };
 $("#toggleAdd").onclick=()=>$("#addcard").classList.toggle('open');
 $("#doAdd").onclick=addTask;
-$("#filters").querySelectorAll(".chip").forEach(ch=>{
-  ch.onclick=()=>{
-    const st=ch.dataset.stage;
-    if(st==="all"){ const on=ch.dataset.on!=="1"; STAGE_ORDER.forEach(s=>active[on?"add":"delete"](s)); }
-    else { active.has(st)?active.delete(st):active.add(st); }
-    syncChips(); renderGantt(); renderList();
-  };
-});
-function syncChips(){
-  const allOn=active.size===4;
-  $("#filters").querySelectorAll(".chip").forEach(ch=>{
-    const st=ch.dataset.stage;
-    ch.dataset.on = st==="all" ? (allOn?"1":"0") : (active.has(st)?"1":"0");
-  });
-}
+bindLinks($("#f_start"),$("#f_end"),$("#f_dur"));
 
 // ── init ──
 async function init(){
   load(true);
-  try{
-    const data=await apiGetAll();
-    STATE.tasks=(data.tasks||[]).map(norm);
-    const sd=(data.settings||[]).find(r=>String(r.key)==='start_date');
-    if(sd && sd.value){ STATE.startDate=String(sd.value).slice(0,10); $("#startDate").value=STATE.startDate; }
-    STATE.loaded=true;
-    renderAll();
-  }catch(err){
-    $("#errSlot").innerHTML=`<div class="errbox">데이터를 불러오지 못했습니다.<br>${err.message}<br><button onclick="location.reload()">다시 시도</button></div>`;
-  }finally{ load(false); }
+  try{ const data=await apiGetAll(); STATE.tasks=(data.tasks||[]).map(norm); STATE.loaded=true;
+    computeStages(); STAGES.forEach(s=>active.add(s));
+    $("#f_stage").innerHTML=STAGES.map(s=>`<option>${s}</option>`).join('');
+    renderFilters(); renderAll(); }
+  catch(err){ $("#errSlot").innerHTML=`<div class="errbox">데이터를 불러오지 못했습니다.<br>${err.message}<br><button onclick="location.reload()">다시 시도</button></div>`; }
+  finally{ load(false); }
 }
 init();
 </script>
