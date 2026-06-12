@@ -3,457 +3,450 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>런칭 타임라인 · ASISTOBE</title>
-<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<title>애즈이즈투비 런칭 타임라인 · 13주 간트</title>
 <style>
-  :root{
-    --bg:#F2F4F6; --card:#FFFFFF; --ink:#191F28; --sub:#4E5968; --hint:#8B95A1;
-    --line:#E5E8EB; --primary:#3182F6; --primary-bg:#E8F3FF;
-    --t:#0F6E56; --t-bar:#7DD3B3; --t-bg:#E6F6EF;
-    --b:#1B64DA; --b-bar:#92BDF0; --b-bg:#E9F2FD;
-    --p:#5B53C6; --p-bar:#BBB6F0; --p-bg:#EFEEFD;
-    --c:#C24A21; --c-bar:#F2A988; --c-bg:#FCEDE6;
-    --r:20px; --r-sm:12px;
-    --shadow:0 1px 3px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.04);
-    font-family:'Pretendard',-apple-system,BlinkMacSystemFont,sans-serif;
-  }
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5;padding-bottom:56px}
-  .wrap{max-width:1000px;margin:0 auto;padding:0 20px}
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+:root{
+  --primary:#3182F6; --primary-weak:rgba(49,130,246,.10);
+  --bg:#F9FAFB; --surface:#FFFFFF;
+  --text:#191F28; --text-muted:#4E5968; --text-faint:#8B95A1;
+  --border:#E5E8EB; --border-soft:rgba(0,0,0,.05); --border-strong:#D1D6DB;
+  --radius:16px; --radius-sm:8px;
+  --tl-col-w:66px; --tl-row-h:30px; --tl-left-w:368px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04); --shadow-md:0 4px 16px rgba(0,0,0,.08);
+}
+*{box-sizing:border-box;}
+body{margin:0; background:var(--bg); color:var(--text);
+  font-family:'Pretendard','맑은 고딕',-apple-system,BlinkMacSystemFont,sans-serif;
+  -webkit-font-smoothing:antialiased; font-size:13px; line-height:1.5;}
+.page{max-width:1320px; margin:0 auto; padding:24px 20px 60px;}
+.hdr{display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:16px;}
+.hdr-l h1{margin:0; font-size:22px; font-weight:800; letter-spacing:-.02em;}
+.hdr-l .sub{margin-top:4px; font-size:12.5px; color:var(--text-muted);}
+.hdr-stats{display:flex; gap:8px; flex-wrap:wrap;}
+.stat{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:8px 14px; text-align:center; min-width:62px;}
+.stat .num{font-size:18px; font-weight:800; color:var(--primary); line-height:1;}
+.stat .lbl{font-size:10.5px; color:var(--text-faint); margin-top:3px;}
 
-  #topbar{position:fixed;top:0;left:0;right:0;height:3px;background:transparent;z-index:100;opacity:0;transition:opacity .3s}
-  #topbar.active{opacity:1}
-  #topfill{display:block;height:100%;width:0;background:var(--primary);border-radius:0 3px 3px 0}
+/* ── 드래그 시프트 패널 ── */
+.vmshift{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 12px; margin-bottom:12px;}
+.vmshift.attach{margin-bottom:8px; border-color:var(--primary-weak); box-shadow:0 1px 0 rgba(49,130,246,.06);}
+.vmshift.bottom{margin:8px 0 0;}
+.vmshift-info{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px; font-size:12px; color:var(--text-muted);}
+.vmshift-info b{color:var(--text); font-weight:800;}
+.vmshift-delta{font-size:11px; font-weight:700; padding:2px 8px; border-radius:6px; background:var(--bg); color:var(--text-faint);}
+.vmshift-delta.move{background:var(--primary-weak); color:var(--primary);}
+.vmshift-cap{margin-left:auto; font-size:10.5px; color:var(--text-faint);}
+.vmshift .tl-btn{padding:4px 10px;}
 
-  .top{padding:30px 0 6px}
-  .eyebrow{font-size:13px;font-weight:700;color:var(--primary);letter-spacing:.02em}
-  h1{font-size:30px;font-weight:800;letter-spacing:-.03em;margin-top:4px}
-  .top p{color:var(--hint);font-size:14px;margin-top:6px;font-weight:500}
-  .synced{display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:var(--t-bg);color:var(--t);
-    font-size:12.5px;font-weight:700;padding:7px 12px;border-radius:999px}
-  .synced .dot{width:7px;height:7px;border-radius:50%;background:#15B86A}
+.dragbar{--dragbar-accent:49,130,246; position:relative; height:26px; width:100%; box-sizing:border-box;
+  background:rgba(var(--dragbar-accent),.05); border:1px solid rgba(var(--dragbar-accent),.22); border-radius:13px;
+  cursor:grab; user-select:none; -webkit-user-select:none; touch-action:none; color:#9aa3af; font-size:10.5px;
+  font-weight:600; overflow:hidden; transition:background .12s,border-color .12s;}
+.dragbar:hover{background:rgba(var(--dragbar-accent),.09); border-color:rgba(var(--dragbar-accent),.4);}
+.dragbar.is-dragging{cursor:grabbing;}
+.dragbar__hint{position:absolute; top:50%; transform:translateY(-50%); opacity:.65; letter-spacing:.3px; pointer-events:none;}
+.dragbar__hint--l{left:12px;} .dragbar__hint--r{right:12px;}
+.dragbar__knob{position:absolute; top:50%; left:0; width:16px; height:16px; margin-top:-8px; margin-left:-8px;
+  background:rgb(var(--dragbar-accent)); border-radius:50%; opacity:0; pointer-events:none;
+  box-shadow:0 2px 8px rgba(var(--dragbar-accent),.5); transition:opacity .2s ease;}
+.dragbar.is-dragging .dragbar__knob{opacity:1; transition:opacity .08s ease;}
 
-  .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:16px 0 6px}
-  .sortbox{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);
-    border-radius:var(--r-sm);padding:10px 14px;box-shadow:var(--shadow)}
-  .sortbox label{font-size:13px;font-weight:700;color:var(--sub)}
-  .sortbox select{border:none;font-family:inherit;font-size:14px;font-weight:700;color:var(--ink);background:transparent;outline:none;cursor:pointer}
-  .addbtn{margin-left:auto;font-family:inherit;font-size:14px;font-weight:700;color:#fff;background:var(--primary);
-    border:none;border-radius:var(--r-sm);padding:11px 18px;cursor:pointer;box-shadow:var(--shadow);transition:.15s}
-  .addbtn:active{transform:scale(.96)}
+.bar-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:10px;}
+.seg{display:inline-flex; background:#EDF0F3; border-radius:9px; padding:3px; gap:2px;}
+.seg button{border:none; background:transparent; font-family:inherit; font-size:12px; font-weight:700; color:var(--text-muted); padding:6px 14px; border-radius:7px; cursor:pointer; transition:all .12s;}
+.seg button.active{background:#fff; color:var(--primary); box-shadow:var(--shadow-sm);}
+.depth{display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:11px; color:var(--text-faint); font-weight:700;}
+.depth .grp{display:inline-flex; align-items:center; gap:3px; background:var(--surface); border:1px solid var(--border); border-radius:7px; padding:3px 5px;}
+.depth .grp span{font-size:10.5px; color:var(--text-muted); font-weight:700; padding:0 3px;}
+.depth .grp button{border:none; background:var(--bg); width:22px; height:22px; border-radius:5px; cursor:pointer; font-size:12px; color:var(--text-muted); font-weight:800; line-height:1; transition:all .12s;}
+.depth .grp button:hover{background:var(--primary-weak); color:var(--primary);}
+.tl-spacer{margin-left:auto;}
+.tl-btn{padding:5px 11px; background:var(--bg); border:1px solid var(--border); color:var(--text-muted); font-family:inherit; font-size:11.5px; font-weight:700; border-radius:7px; cursor:pointer; transition:all .12s; white-space:nowrap;}
+.tl-btn:hover{background:#fff; border-color:var(--border-strong); color:var(--text);}
+.tl-btn.accent{background:var(--primary-weak); border-color:rgba(49,130,246,.2); color:var(--primary);}
 
-  .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
-  @media(max-width:640px){.summary{grid-template-columns:repeat(2,1fr)}}
-  .stat{background:var(--card);border-radius:var(--r);padding:13px 18px;box-shadow:var(--shadow)}
-  .stat .n{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1}
-  .stat .l{font-size:13px;font-weight:600;color:var(--hint);margin-top:5px}
-  .stat.done .n{color:#15B86A} .stat.prog .n{color:var(--primary)}
-  .stat.delay .n{color:#F04452} .stat.todo .n{color:var(--sub)}
-  .progress{background:var(--card);border-radius:var(--r);padding:14px 18px;margin-top:10px;box-shadow:var(--shadow)}
-  .progress .row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
-  .progress .row b{font-size:15px;font-weight:800}
-  .progress .row span{font-size:13px;font-weight:600;color:var(--hint)}
-  .bar{height:10px;background:var(--bg);border-radius:999px;overflow:hidden}
-  .bar i{display:block;height:100%;background:linear-gradient(90deg,#15B86A,#2AC1BC);border-radius:999px;transition:width .4s ease}
+.tl-toolbar{display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin-bottom:12px; padding:8px 10px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm);}
+.tl-chip{display:inline-flex; align-items:center; gap:5px; padding:5px 9px; border:1px solid transparent; border-radius:7px; background:transparent; font-family:inherit; font-size:11px; font-weight:600; color:var(--text-muted); cursor:pointer; transition:all .12s; white-space:nowrap;}
+.tl-chip:hover{background:var(--bg);}
+.tl-chip.active{background:var(--primary-weak); border-color:rgba(49,130,246,.25); color:var(--primary);}
+.tl-chip-dot{width:9px; height:9px; border-radius:3px; flex-shrink:0;}
 
-  .addcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px 18px;
-    margin-top:11px;box-shadow:var(--shadow);display:none}
-  .addcard.open{display:block}
-  .fldgrid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.1fr 1.1fr .8fr auto;gap:10px;align-items:end}
-  @media(max-width:760px){.fldgrid{grid-template-columns:1fr 1fr}}
-  .fld{display:flex;flex-direction:column;gap:5px}
-  .fld label{font-size:12px;font-weight:700;color:var(--hint)}
-  .fld input,.fld select{font-family:inherit;font-size:14px;font-weight:600;color:var(--ink);background:var(--bg);
-    border:1px solid var(--line);border-radius:10px;padding:9px 11px;outline:none}
-  .fld input:focus,.fld select:focus{border-color:var(--primary)}
-  .savebtn{font-family:inherit;font-size:14px;font-weight:700;color:#fff;background:var(--primary);border:none;
-    border-radius:10px;padding:10px 18px;cursor:pointer;height:38px}
-  .cancelbtn{font-family:inherit;font-size:14px;font-weight:700;color:var(--sub);background:var(--bg);
-    border:1px solid var(--line);border-radius:10px;padding:10px 18px;cursor:pointer;height:38px}
+.tl-wrap{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); overflow:auto; max-height:calc(100vh - 300px); position:relative; box-shadow:var(--shadow-sm);}
+.tl-grid{display:grid; grid-template-columns:var(--tl-left-w) 1fr;}
+.tl-axis-corner{position:sticky; top:0; left:0; z-index:30; background:#fff; border-right:1px solid var(--border); border-bottom:1px solid var(--border); padding:0 14px; font-size:10.5px; color:var(--text-faint); font-weight:700; letter-spacing:.03em; display:flex; align-items:center;}
+.tl-axis-bar{position:sticky; top:0; z-index:20; background:#fff; border-bottom:1px solid var(--border);}
+.tl-axis-top{display:flex; border-bottom:1px solid var(--border-soft); height:22px;}
+.tl-axis-topcell{border-right:1px solid var(--border-soft); padding:0 6px; font-size:10.5px; font-weight:700; color:var(--text-muted); display:flex; align-items:center; gap:5px; flex-shrink:0; overflow:hidden;}
+.tl-axis-topcell .mn{font-size:9px; color:var(--text-faint); font-weight:600;}
+.tl-axis-topcell.wkbound{border-right:1px solid var(--border);}
+.tl-axis-cells{display:flex; height:34px;}
+.tl-axis-cell{width:var(--tl-col-w); flex-shrink:0; border-right:1px solid var(--border-soft); padding:4px 0; text-align:center; line-height:1.2;}
+.tl-axis-cell.curr{background:var(--primary-weak);}
+.tl-axis-cell.we{background:rgba(0,0,0,.022);}
+.tl-axis-cell.wkbound{border-right:1px solid var(--border);}
+.tl-axis-cell .c1{font-size:11px; font-weight:800; color:var(--text);}
+.tl-axis-cell.curr .c1{color:var(--primary);}
+.tl-axis-cell.we .c2{color:#E5484D;}
+.tl-axis-cell .c2{font-size:8.5px; color:var(--text-faint); margin-top:1px;}
 
-  .filters{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 10px}
-  .chip{font-family:inherit;font-size:13.5px;font-weight:700;padding:9px 16px;border-radius:999px;
-    border:1px solid var(--line);background:var(--card);color:var(--sub);cursor:pointer;transition:.15s;box-shadow:var(--shadow)}
-  .chip:active{transform:scale(.96)}
-  .chip[data-on="1"].all{background:var(--ink);color:#fff;border-color:var(--ink)}
-  .chip.t[data-on="1"]{background:var(--t-bg);color:var(--t);border-color:var(--t-bar)}
-  .chip.b[data-on="1"]{background:var(--b-bg);color:var(--b);border-color:var(--b-bar)}
-  .chip.p[data-on="1"]{background:var(--p-bg);color:var(--p);border-color:var(--p-bar)}
-  .chip.c[data-on="1"]{background:var(--c-bg);color:var(--c);border-color:var(--c-bar)}
+.tl-row-label{position:sticky; left:0; z-index:10; background:#fff; border-right:1px solid var(--border); border-bottom:1px solid var(--border-soft); height:var(--tl-row-h); display:flex; align-items:center; gap:6px; font-size:12px; cursor:pointer; overflow:hidden; padding-right:10px;}
+.tl-row-label:hover{background:var(--primary-weak);}
+.tl-row-label.lv1{font-weight:800; background:#F2F4F6; font-size:12.5px; padding-left:12px;}
+.tl-row-label.lv1:hover{background:#EAEDF0;}
+.tl-row-label.lv2{font-weight:600; background:#FAFBFC; padding-left:30px; font-size:11.5px;}
+.tl-row-label.lv3{padding-left:52px; color:var(--text-muted); font-size:11.5px;}
+.tl-arrow{font-size:8px; color:var(--text-faint); transition:transform .15s; width:10px; flex-shrink:0; text-align:center;}
+.tl-row-label.collapsed .tl-arrow{transform:rotate(-90deg);}
+.tl-cat-icon{width:18px; height:18px; border-radius:5px; color:#fff; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.tl-dot{width:6px; height:6px; border-radius:50%; flex-shrink:0;}
+.tl-name{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.tl-meta{font-size:9.5px; color:var(--text-faint); flex-shrink:0;}
+.tl-badge{font-size:9px; font-weight:700; padding:1px 5px; border-radius:4px; flex-shrink:0; letter-spacing:.02em;}
+.tl-badge.g-필수{background:#FEE2E2; color:#DC2626;}
+.tl-badge.g-착수{background:#DBEAFE; color:#2563EB;}
+.tl-badge.g-진행{background:#E5E7EB; color:#6B7280;}
 
-  .panel{background:var(--card);border-radius:var(--r);padding:18px;box-shadow:var(--shadow);margin-top:11px}
-  .panel h2{font-size:18px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px}
-  .panel .sub{font-size:13px;color:var(--hint);font-weight:500;margin-bottom:13px}
-  .tabs{display:inline-flex;background:#E9ECEF;border-radius:999px;padding:4px;gap:4px;margin-top:14px}
-  .tab{font-family:inherit;font-size:14px;font-weight:700;color:var(--sub);background:transparent;border:none;border-radius:999px;padding:9px 26px;cursor:pointer;transition:.15s}
-  .tab.active{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
-  .panel.hidden{display:none}
+.tl-row-track{position:relative; height:var(--tl-row-h); border-bottom:1px solid var(--border-soft);}
+.tl-row-track.lv1{background:rgba(0,0,0,.018);}
+.tl-row-track.lv2{background:rgba(0,0,0,.008);}
+.tl-row-track .grid-bg{position:absolute; inset:0; pointer-events:none;}
+.tl-today-line{position:absolute; top:0; bottom:0; width:2px; background:var(--primary); box-shadow:0 0 8px rgba(49,130,246,.45); z-index:4; pointer-events:none;}
+.tl-today-line.edge{background:repeating-linear-gradient(180deg,var(--primary) 0 4px,transparent 4px 8px); box-shadow:none; opacity:.7;}
+.tl-today-flag{position:absolute; top:-1px; transform:translateX(-50%); z-index:21; background:var(--primary); color:#fff; font-size:9px; font-weight:800; padding:2px 6px; border-radius:0 0 5px 5px; white-space:nowrap; pointer-events:none;}
+.tl-today-flag.edge{background:#8B95A1;}
+.tl-bar{position:absolute; top:5px; height:calc(var(--tl-row-h) - 10px); border-radius:5px; padding:0 7px; display:flex; align-items:center; color:#fff; font-size:10px; font-weight:700; cursor:pointer; transition:transform .1s,box-shadow .1s; overflow:hidden; white-space:nowrap; z-index:2;}
+.tl-bar:hover{transform:translateY(-1px); box-shadow:var(--shadow-md); z-index:5;}
+.tl-bar.must{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.6);}
+.tl-bar-text{position:relative; z-index:1; overflow:hidden; text-overflow:ellipsis;}
+.tl-group-bar{position:absolute; top:13px; height:5px; border-radius:3px; opacity:.45; z-index:1; pointer-events:none;}
+.tl-group-bar.lv2{height:6px; opacity:.6;}
 
-  .gscroll{overflow-x:auto;margin:0 -4px;padding:0 4px}
-  .gantt{min-width:760px}
-  .grow{display:grid;grid-template-columns:200px 1fr;align-items:center}
-  .ghead .htrack{display:grid}
-  .ghead .wc{text-align:center;padding:0 0 8px;font-size:11px;font-weight:700;color:var(--sub);border-left:1px solid var(--line)}
-  .glabel{font-size:13.5px;font-weight:600;padding:5px 12px 5px 0;display:flex;align-items:center;gap:8px;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .dot8{width:8px;height:8px;border-radius:3px;flex:none}
-  .dot8.t{background:var(--t-bar)} .dot8.b{background:var(--b-bar)} .dot8.p{background:var(--p-bar)} .dot8.c{background:var(--c-bar)}
-  .gtrack{position:relative;height:34px}
-  .gbar{position:absolute;top:5px;height:24px;border-radius:8px;display:flex;align-items:center;justify-content:center;
-    font-size:12px;font-weight:800;cursor:pointer;transition:.2s;min-width:10px;box-sizing:border-box;overflow:hidden}
-  .gbar.t{background:var(--t-bar);color:#0a4838} .gbar.b{background:var(--b-bar);color:#0b3f8c}
-  .gbar.p{background:var(--p-bar);color:#3a338c} .gbar.c{background:var(--c-bar);color:#7a2e12}
-  .gbar.mile{box-shadow:inset 0 0 0 2px rgba(0,0,0,.35)}
+.tl-list{padding:6px 0;}
+.tl-wk-block{border-bottom:1px solid var(--border-soft);}
+.tl-wk-head{position:sticky; top:0; z-index:5; background:#F2F4F6; padding:9px 16px; display:flex; align-items:center; gap:10px; border-bottom:1px solid var(--border);}
+.tl-wk-head.curr{background:var(--primary-weak);}
+.tl-wk-no{font-size:14px; font-weight:800; color:var(--text);}
+.tl-wk-head.curr .tl-wk-no{color:var(--primary);}
+.tl-wk-date{font-size:11px; color:var(--text-muted); font-weight:600;}
+.tl-wk-cnt{margin-left:auto; font-size:10.5px; color:var(--text-faint); font-weight:700; background:#fff; padding:2px 9px; border-radius:10px;}
+.tl-li{display:flex; align-items:center; gap:9px; padding:9px 16px 9px 18px; cursor:pointer; border-bottom:1px solid var(--border-soft); transition:background .1s;}
+.tl-li:last-child{border-bottom:none;}
+.tl-li:hover{background:var(--primary-weak);}
+.tl-li .tl-cat-icon{width:20px; height:20px;}
+.tl-li-main{flex:1; min-width:0;}
+.tl-li-sub{font-size:13px; font-weight:700; color:var(--text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.tl-li-work{font-size:11px; color:var(--text-faint); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-top:1px;}
+.tl-li-span{font-size:10px; color:var(--text-faint); font-weight:700; flex-shrink:0; background:var(--bg); padding:2px 7px; border-radius:5px;}
 
-  .list{display:flex;flex-direction:column;gap:8px}
-  .item{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;
-    border:1px solid var(--line);border-radius:14px;padding:11px 16px;transition:.15s}
-  .item:hover{border-color:#D6DBDF;background:#FBFCFD}
-  .badge{font-size:11px;font-weight:800;padding:5px 10px;border-radius:8px;white-space:nowrap}
-  .badge.t{background:var(--t-bg);color:var(--t)} .badge.b{background:var(--b-bg);color:var(--b)}
-  .badge.p{background:var(--p-bg);color:var(--p)} .badge.c{background:var(--c-bg);color:var(--c)}
-  .item .name{font-size:14.5px;font-weight:700;letter-spacing:-.01em}
-  .item .name .star{color:#C24A21;margin-right:3px}
-  .item .meta{font-size:12.5px;color:var(--hint);font-weight:600;margin-top:3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .asg{font-family:inherit;font-size:12px;font-weight:600;color:var(--sub);background:var(--bg);
-    border:1px solid var(--line);border-radius:7px;padding:3px 8px;outline:none;width:110px}
-  .asg:focus{border-color:var(--primary)}
-  .actions{display:flex;align-items:center;gap:8px}
-  .status{font-family:inherit;font-size:12.5px;font-weight:800;padding:8px 14px;border-radius:999px;
-    border:none;cursor:pointer;white-space:nowrap;transition:.15s;min-width:74px}
-  .status:active{transform:scale(.95)}
-  .status[data-s="미착수"]{background:var(--bg);color:var(--sub)}
-  .status[data-s="진행중"]{background:var(--primary-bg);color:var(--primary)}
-  .status[data-s="완료"]{background:#E5F8EF;color:#15B86A}
-  .status[data-s="지연"]{background:#FFECEC;color:#F04452}
-  .edit{font-family:inherit;font-size:14px;background:transparent;border:none;cursor:pointer;padding:4px 8px;border-radius:8px;transition:.15s}
-  .edit:hover{background:var(--primary-bg)}
-  .del{font-family:inherit;font-size:16px;font-weight:700;color:var(--hint);background:transparent;border:none;cursor:pointer;padding:4px 8px;border-radius:8px;transition:.15s}
-  .del:hover{background:#FFECEC;color:#F04452}
-  .item.editing{display:block;border-color:var(--primary)}
-  .edit-grid{display:grid;grid-template-columns:1fr 1fr 1.1fr 1.1fr .8fr;gap:10px;align-items:end}
-  @media(max-width:560px){.edit-grid{grid-template-columns:1fr 1fr}}
-  .edit-actions{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end;margin-top:4px}
+.tl-modal-bg{position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:100; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .15s;}
+.tl-modal-bg.show{opacity:1; pointer-events:auto;}
+.tl-modal{background:#fff; border-radius:var(--radius); width:100%; max-width:480px; max-height:84vh; overflow:auto; box-shadow:0 12px 40px rgba(0,0,0,.2); transform:translateY(8px) scale(.98); transition:transform .15s;}
+.tl-modal-bg.show .tl-modal{transform:none;}
+.tl-modal-hd{padding:18px 20px 14px; border-bottom:1px solid var(--border); position:relative;}
+.tl-modal-cat{display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:8px;}
+.tl-modal-cat .tl-cat-icon{width:16px; height:16px; font-size:9px;}
+.tl-modal-hd h3{margin:0; font-size:16px; font-weight:800; letter-spacing:-.01em; padding-right:30px;}
+.tl-modal-hd .work{font-size:11.5px; color:var(--text-faint); margin-top:4px;}
+.tl-modal-x{position:absolute; top:16px; right:16px; width:26px; height:26px; border:none; background:var(--bg); border-radius:7px; font-size:16px; color:var(--text-muted); cursor:pointer; line-height:1;}
+.tl-modal-x:hover{background:var(--border);}
+.tl-modal-bd{padding:16px 20px 20px;}
+.tl-field{display:flex; gap:10px; padding:9px 0; border-bottom:1px solid var(--border-soft); font-size:12.5px;}
+.tl-field:last-child{border-bottom:none;}
+.tl-field .k{width:72px; flex-shrink:0; color:var(--text-faint); font-weight:600; font-size:11.5px;}
+.tl-field .v{flex:1; color:var(--text); line-height:1.55;}
 
-  .empty{text-align:center;color:var(--hint);font-size:14px;font-weight:600;padding:40px 0}
-  .errbox{background:#FFECEC;border:1px solid #FAD2D2;color:#C0392B;border-radius:var(--r);padding:20px;
-    font-size:14px;font-weight:600;margin-top:14px;line-height:1.7}
-  .errbox button{margin-top:10px;font-family:inherit;font-weight:700;background:#F04452;color:#fff;border:none;border-radius:10px;padding:9px 16px;cursor:pointer}
-
-  #toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);opacity:0;
-    background:var(--ink);color:#fff;font-size:13.5px;font-weight:700;padding:12px 20px;border-radius:999px;
-    box-shadow:0 8px 24px rgba(0,0,0,.18);transition:.25s;z-index:200;pointer-events:none}
-  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-  #toast.err{background:#F04452}
-
-  footer{text-align:center;color:var(--hint);font-size:12.5px;font-weight:600;margin-top:26px}
+footer{margin-top:18px; text-align:center; font-size:11px; color:var(--text-faint);}
+footer b{color:var(--text-muted); font-weight:700;}
+@media (max-width:640px){.page{padding:16px 12px 50px;} :root{--tl-left-w:200px;} .hdr-l h1{font-size:18px;}}
 </style>
 </head>
 <body>
-<div id="topbar"><i id="topfill"></i></div>
-<div class="wrap">
-
-  <div class="top">
-    <div class="eyebrow">ASISTOBE · 마이크로바이옴 팩클렌저</div>
-    <h1>런칭 타임라인</h1>
-    <p>시작일·종료일·기간을 입력하면 서로 맞춰 자동 계산됩니다. 모두 구글 시트에 저장돼요.</p>
-    <div class="synced"><span class="dot"></span>구글 시트 연동됨</div>
-  </div>
-
-  <div class="controls">
-    <div class="sortbox">
-      <label>정렬</label>
-      <select id="sort">
-        <option value="start">시작일 순</option>
-        <option value="end">종료일 순</option>
-        <option value="dur">기간 순</option>
-        <option value="stage">단계별</option>
-      </select>
+<div class="page">
+  <div class="hdr">
+    <div class="hdr-l">
+      <h1>애즈이즈투비 런칭 타임라인</h1>
+      <div class="sub">13주 통합 간트 · 폼 클렌저 (125ml 튜브, OEM) · 정식 런칭 2026.08.31 · 드래그바로 구간 이동</div>
     </div>
-    <button class="addbtn" id="toggleAdd">+ 작업 추가</button>
+    <div class="hdr-stats" id="stats"></div>
   </div>
 
-  <div class="addcard" id="addcard">
-    <div class="fldgrid">
-      <div class="fld"><label>작업명</label><input type="text" id="f_name" placeholder="예: 인플루언서 2차 시딩"></div>
-      <div class="fld"><label>단계</label>
-        <select id="f_stage"><option>생산·공급</option><option>인증·임상</option><option>콘텐츠·디자인</option><option>마케팅·런칭</option></select></div>
-      <div class="fld"><label>유형</label>
-        <select id="f_type"><option>진행</option><option>착수</option><option>마일스톤</option></select></div>
-      <div class="fld"><label>시작일</label><input type="date" id="f_start" value="2026-06-08"></div>
-      <div class="fld"><label>종료일</label><input type="date" id="f_end" value="2026-06-14"></div>
-      <div class="fld"><label>기간(일)</label><input type="number" id="f_dur" min="1" value="7"></div>
-      <button class="savebtn" id="doAdd">추가</button>
+  <div class="bar-row" id="controls"></div>
+  <div class="tl-toolbar" id="toolbar"></div>
+
+  <!-- 상단 드래그바 — 필터 바로 아래·간트 바로 위 (구간 이동 스크롤) -->
+  <div class="vmshift attach" id="shiftTop">
+    <div class="vmshift-info">
+      <span>↔ 구간 이동 — 바를 끌어 다음/이전 기간 보기 · <b>오른쪽 = 다음(미래)</b></span>
+      <span class="vmshift-delta move" id="roView">보임 W1–W?</span>
+      <button class="tl-btn" id="firstBtn">↞ 맨 앞</button>
+      <span class="vmshift-cap">날짜·주차·막대 한 몸으로 좌우 이동</span>
+    </div>
+    <div class="dragbar" id="dragTop" title="좌우로 끌어서 다음/이전 기간 보기">
+      <span class="dragbar__hint dragbar__hint--l">◀ 이전</span>
+      <span class="dragbar__knob" data-dragbar-knob></span>
+      <span class="dragbar__hint dragbar__hint--r">다음 ▶</span>
     </div>
   </div>
+  <div class="tl-wrap" id="board"></div>
 
-  <div class="summary" id="summary"></div>
-  <div class="progress">
-    <div class="row"><b id="pctLabel">진행률 0%</b><span id="pctSub">완료 0 / 0</span></div>
-    <div class="bar"><i id="pctBar" style="width:0%"></i></div>
+  <!-- 하단 드래그바 (구간 이동 스크롤) -->
+  <div class="vmshift bottom" id="shiftBot">
+    <div class="dragbar" id="dragBot" title="좌우로 끌어서 다음/이전 기간 보기">
+      <span class="dragbar__hint dragbar__hint--l">◀ 이전</span>
+      <span class="dragbar__knob" data-dragbar-knob></span>
+      <span class="dragbar__hint dragbar__hint--r">다음 ▶</span>
+    </div>
   </div>
 
-  <div class="filters" id="filters"></div>
-
-  <div id="errSlot"></div>
-
-  <div class="tabs" id="tabs">
-    <button class="tab active" data-tab="gantt">간트</button>
-    <button class="tab" data-tab="list">리스트</button>
-  </div>
-
-  <div class="panel" id="panel-gantt">
-    <div class="sub">막대를 클릭하면 상태가 바뀝니다 · ★ 진한 테두리 = 마일스톤</div>
-    <div class="gscroll"><div class="gantt" id="gantt"></div></div>
-  </div>
-
-  <div class="panel hidden" id="panel-list">
-    <div class="sub">✏️ 수정 · 상태 클릭 = 순환 · 담당 입력 후 칸 밖 클릭 = 저장 · ✕ = 삭제</div>
-    <div class="list" id="list"></div>
-  </div>
-
-  <footer>ASISTOBE 마이크로바이옴 팩클렌저 · 런칭 타임라인</footer>
+  <footer>전 항목 상태 <b>예정</b> · 구분: <span class="tl-badge g-필수">필수</span> <span class="tl-badge g-착수">착수</span> <span class="tl-badge g-진행">진행</span> &nbsp;·&nbsp; 출처: asisstobe_launch_timeline_260605 &nbsp;·&nbsp; <b>김규빈 × Claude</b></footer>
 </div>
-<div id="toast"></div>
+
+<div class="tl-modal-bg" id="modalBg"><div class="tl-modal" id="modal"></div></div>
 
 <script>
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxf2bo8LQ57Vu6fjPmrVug7JeGdSR3n_3qSjPti5naB1fifFpaFGJohGC_vGFPUFaRV6g/exec';
-const SECRET_KEY = 'olive-asistobe-2026';
-const PAL = ["t","b","p","c"];
-const STAGE_PAL = {"생산":"t","생산·공급":"t","인증·임상":"b","임상":"b","디자인":"p","콘텐츠·디자인":"p","마케팅":"c","마케팅·런칭":"c"};
-const PREF = ["생산","생산·공급","인증·임상","임상","디자인","콘텐츠·디자인","마케팅","마케팅·런칭","런칭 준비"];
-let STAGES = [];
-const STATUSES = ["미착수","진행중","완료","지연"];
-function computeStages(){
-  const set=[]; STATE.tasks.forEach(t=>{ if(t.stage && set.indexOf(t.stage)<0) set.push(t.stage); });
-  set.sort((a,b)=>{ const ia=PREF.indexOf(a),ib=PREF.indexOf(b); return (ia<0?99:ia)-(ib<0?99:ib); });
-  STAGES=set;
-}
-function stageColor(s){ return STAGE_PAL[s] || PAL[((STAGES.indexOf(s))%4+4)%4] || "t"; }
+const D = {"rows": [{"cat": "디자인", "work": "외부패키지 디자인 착수", "sub": "디자인 브리프·레퍼런스 정리", "desc": "컨셉·톤·필수 표기요소 정리 / 콜라보명 노출 여부 확정", "sw": 1, "ew": 1, "sdi": 0, "edi": 4, "dur": "5영업일", "pre": "-", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": "콜라보명 노출 시 사용권 계약 선행"}, {"cat": "디자인", "work": "외부패키지 디자인 착수", "sub": "외주 업체 선정·발주", "desc": "견적·일정·계약 체결", "sw": 1, "ew": 1, "sdi": 0, "edi": 4, "dur": "5영업일", "pre": "브리프", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "디자인", "work": "외부패키지 디자인 착수", "sub": "1차 시안 수령·피드백", "desc": "시안 검토·수정요청 정리", "sw": 1, "ew": 1, "sdi": 0, "edi": 4, "dur": "5영업일", "pre": "발주", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "디자인", "work": "외부패키지 디자인 마무리", "sub": "2차 시안·수정 확정", "desc": "최종 디자인 픽스", "sw": 2, "ew": 2, "sdi": 7, "edi": 11, "dur": "5영업일", "pre": "1차 시안", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "디자인", "work": "외부패키지 디자인 마무리", "sub": "인쇄 데이터·입고용 파일 전달", "desc": "단상자·라벨 칼선/인쇄사양 확정 → 부자재 발주에 전달", "sw": 2, "ew": 2, "sdi": 7, "edi": 11, "dur": "5영업일", "pre": "디자인 확정", "gubun": "필수", "status": "예정", "owner": "확인필요", "note": "부자재 발주 선행물"}, {"cat": "소재", "work": "모델 컨택 및 촬영 기획", "sub": "컨셉·무드보드·컷리스트 작성", "desc": "촬영 방향·필요 컷 정의", "sw": 3, "ew": 3, "sdi": 14, "edi": 18, "dur": "5영업일", "pre": "-", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": "미기재분 → 3주 배치(추천)"}, {"cat": "소재", "work": "모델 컨택 및 촬영 기획", "sub": "모델 캐스팅·계약", "desc": "후보 컨택·초상권/사용범위·기간 계약", "sw": 3, "ew": 3, "sdi": 14, "edi": 18, "dur": "5영업일", "pre": "컷리스트", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "소재", "work": "모델 컨택 및 촬영 기획", "sub": "스튜디오·헤메·스타일리스트 섭외", "desc": "촬영 인프라 예약", "sw": 3, "ew": 3, "sdi": 14, "edi": 18, "dur": "5영업일", "pre": "-", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "소재", "work": "모델 촬영", "sub": "모델 촬영 진행", "desc": "연출 컷 촬영 (제품 컷 병행 가능)", "sw": 4, "ew": 4, "sdi": 21, "edi": 25, "dur": "5영업일", "pre": "캐스팅·시제품", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "미기재분 → 4주 배치(추천)"}, {"cat": "소재", "work": "제품 촬영", "sub": "제품 단독·연출 촬영", "desc": "시제품 기반 제품 비주얼 촬영", "sw": 4, "ew": 4, "sdi": 21, "edi": 25, "dur": "5영업일", "pre": "시제품(3주)", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "소재", "work": "모델 및 제품 촬영 마감 → 상세 소재 확보", "sub": "셀렉·리터칭", "desc": "베스트컷 선별·보정", "sw": 5, "ew": 5, "sdi": 28, "edi": 32, "dur": "5영업일", "pre": "촬영", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "소재", "work": "모델 및 제품 촬영 마감 → 상세 소재 확보", "sub": "소재 분류·전달(상세/광고/자사몰)", "desc": "용도별 소재 패키징·배포", "sw": 5, "ew": 5, "sdi": 28, "edi": 32, "dur": "5영업일", "pre": "리터칭", "gubun": "필수", "status": "예정", "owner": "확인필요", "note": "상세·광고·자사몰 디자인 공통 선행"}, {"cat": "소재", "work": "영상 소스 촬영·편집", "sub": "영상 콘티·촬영", "desc": "숏폼·상세용 영상 콘티 작성 후 촬영(제품·모델 촬영과 동선 공유)", "sw": 4, "ew": 4, "sdi": 21, "edi": 25, "dur": "5영업일", "pre": "시제품·캐스팅", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "12주 숏폼 릴리즈 소스"}, {"cat": "소재", "work": "영상 소스 촬영·편집", "sub": "숏폼용 클립 편집 소스 확보", "desc": "컷 셀렉·1차 편집 소스 정리", "sw": 5, "ew": 5, "sdi": 28, "edi": 32, "dur": "5영업일", "pre": "영상 촬영", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "상품기획·가격", "work": "가격·원가·마진 정책 확정", "sub": "원가(COGS) 산정", "desc": "제조원가·부자재·물류 합산해 원가 확정", "sw": 4, "ew": 4, "sdi": 21, "edi": 25, "dur": "5영업일", "pre": "벌크·부자재 발주", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": "마진·판매가의 기준"}, {"cat": "상품기획·가격", "work": "가격·원가·마진 정책 확정", "sub": "채널별 판매가·마진 설계", "desc": "자사몰·스마트스토어 등 채널별 정상가·마진 설계", "sw": 5, "ew": 5, "sdi": 28, "edi": 32, "dur": "5영업일", "pre": "원가 산정", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "기존 팩폼 기준가 벤치마킹 / 프로모션·광고예산 선행"}, {"cat": "상품기획·가격", "work": "가격·원가·마진 정책 확정", "sub": "프로모션 여력·할인 한도 설정", "desc": "최대 할인폭·번들가 한도 결정", "sw": 5, "ew": 5, "sdi": 28, "edi": 32, "dur": "5영업일", "pre": "마진 설계", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "6~8주 프로모션 기획 입력값"}, {"cat": "마케팅", "work": "GEO/SEO·보도자료 선행 콘텐츠 착수", "sub": "키워드·검색의도 리서치", "desc": "타겟 키워드·검색 흐름 정리", "sw": 7, "ew": 7, "sdi": 42, "edi": 46, "dur": "5영업일", "pre": "-", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": "인덱싱 리드타임 확보"}, {"cat": "마케팅", "work": "GEO/SEO·보도자료 선행 콘텐츠 착수", "sub": "보도자료·블로그·지식 콘텐츠 작성", "desc": "검색 노출용 콘텐츠 제작", "sw": 7, "ew": 7, "sdi": 42, "edi": 46, "dur": "5영업일", "pre": "리서치", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "마케팅", "work": "GEO/SEO·보도자료 선행 콘텐츠 착수", "sub": "배포·인덱싱 요청", "desc": "채널 배포·색인 요청", "sw": 7, "ew": 7, "sdi": 42, "edi": 46, "dur": "5영업일", "pre": "작성", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "마케팅", "work": "네이버 블로그 체험단 선발·시딩", "sub": "체험단 모집·선발", "desc": "지원자 모집·선정", "sw": 8, "ew": 8, "sdi": 49, "edi": 53, "dur": "5영업일", "pre": "-", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": "검색 잔존·GEO 연동"}, {"cat": "마케팅", "work": "네이버 블로그 체험단 선발·시딩", "sub": "제품 시딩·가이드 전달", "desc": "제품 발송·작성 가이드", "sw": 8, "ew": 8, "sdi": 49, "edi": 53, "dur": "5영업일", "pre": "완제품 입고", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "마케팅", "work": "정식 런칭(판매개시)", "sub": "채널 동시 오픈·주문/재고 모니터링", "desc": "전 채널 판매 개시·초기 대응", "sw": 12, "ew": 12, "sdi": 77, "edi": 81, "dur": "5영업일", "pre": "전 선행", "gubun": "필수", "status": "예정", "owner": "확인필요", "note": "런칭 9월 전후·±1주 버퍼"}, {"cat": "마케팅", "work": "GEO/PR 검색 노출·광고 ON", "sub": "노출 점검·초기 성과 트래킹", "desc": "검색/광고 노출 확인", "sw": 12, "ew": 12, "sdi": 77, "edi": 81, "dur": "5영업일", "pre": "트래킹", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "마케팅", "work": "런칭 프로모션·오퍼·세트 기획", "sub": "할인·쿠폰 구조 설계", "desc": "런칭 할인율·쿠폰 발급 구조 설계", "sw": 6, "ew": 6, "sdi": 35, "edi": 39, "dur": "5영업일", "pre": "가격정책", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": "가격정책 선행"}, {"cat": "마케팅", "work": "런칭 프로모션·오퍼·세트 기획", "sub": "사은품·동봉물 기획", "desc": "사은품·리플렛·감사카드 등 동봉물 구성", "sw": 7, "ew": 7, "sdi": 42, "edi": 46, "dur": "5영업일", "pre": "-", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "마케팅", "work": "런칭 프로모션·오퍼·세트 기획", "sub": "세트·번들 구성", "desc": "단품/세트/번들 SKU·가격 구성", "sw": 8, "ew": 8, "sdi": 49, "edi": 53, "dur": "5영업일", "pre": "가격정책", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "광고세팅", "work": "광고 셋업(네이버/카카오/GFA)", "sub": "계정·비즈채널·결제수단 세팅", "desc": "광고계정 기본 셋업", "sw": 10, "ew": 10, "sdi": 63, "edi": 67, "dur": "5영업일", "pre": "-", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "광고세팅", "work": "광고 셋업(네이버/카카오/GFA)", "sub": "캠페인 구조·타겟·예산 설계", "desc": "캠페인/그룹/타겟/예산 설계", "sw": 10, "ew": 10, "sdi": 63, "edi": 67, "dur": "5영업일", "pre": "계정", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "광고세팅", "work": "광고 셋업(네이버/카카오/GFA)", "sub": "소재 업로드·심사 제출", "desc": "광고 소재 등록·검수 제출", "sw": 10, "ew": 10, "sdi": 63, "edi": 67, "dur": "5영업일", "pre": "소재", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "심사 리드타임"}, {"cat": "광고세팅", "work": "스토어·광고 셋업 마감", "sub": "전환추적 연동 확인(픽셀/UTM)", "desc": "픽셀·UTM 정상 연동 점검", "sw": 11, "ew": 11, "sdi": 70, "edi": 74, "dur": "5영업일", "pre": "트래킹", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "광고세팅", "work": "스토어·광고 셋업 마감", "sub": "사전예약·소프트오픈 캠페인 ON", "desc": "런칭 직전 캠페인 가동", "sw": 11, "ew": 11, "sdi": 70, "edi": 74, "dur": "5영업일", "pre": "셋업", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "상세페이지", "work": "기획·구성안·카피 착수", "sub": "정보구조·후킹카피·섹션 설계", "desc": "상세 흐름·카피 설계", "sw": 6, "ew": 6, "sdi": 35, "edi": 39, "dur": "5영업일", "pre": "촬영컷", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": "워시오프라 '세안 후/사용 후' 조건 명시(진정·보습 과표현 주의) / 콜라보명 표시 검토"}, {"cat": "상세페이지", "work": "기획·구성안·카피 착수", "sub": "클레임 후보 정리(임상 자리 비움)", "desc": "임상 결과 삽입 위치 확보", "sw": 6, "ew": 6, "sdi": 35, "edi": 39, "dur": "5영업일", "pre": "-", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "상세페이지", "work": "디자인 제작 시작", "sub": "레이아웃 1차 디자인", "desc": "상세 레이아웃·비주얼 1차", "sw": 7, "ew": 7, "sdi": 42, "edi": 46, "dur": "5영업일", "pre": "구성안", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "상세페이지", "work": "디자인 제작 중", "sub": "비주얼·소재 적용 2차", "desc": "촬영 소재 적용·보강", "sw": 8, "ew": 8, "sdi": 49, "edi": 53, "dur": "5영업일", "pre": "1차", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "상세페이지", "work": "디자인 마감 → 임상 데이터 반영", "sub": "임상 결과 수치·문구 삽입", "desc": "결과 데이터 반영", "sw": 9, "ew": 9, "sdi": 56, "edi": 60, "dur": "5영업일", "pre": "임상 결과(9주)", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "상세페이지", "work": "효능 클레임 반영 + 표시·광고 검수", "sub": "부당표시·과대광고 셀프체크", "desc": "표시·광고법 자가검수", "sw": 10, "ew": 10, "sdi": 63, "edi": 67, "dur": "5영업일", "pre": "임상 결과", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "검수 시간 별도 확보"}, {"cat": "상세페이지", "work": "효능 클레임 반영 + 표시·광고 검수", "sub": "실증자료 매칭(클레임-근거)", "desc": "클레임별 근거 연결", "sw": 10, "ew": 10, "sdi": 63, "edi": 67, "dur": "5영업일", "pre": "셀프체크", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "상세페이지", "work": "최종 검수·채널 업로드 완료", "sub": "최종 교정·디바이스 QA", "desc": "오탈자·모바일 표시 점검", "sw": 11, "ew": 11, "sdi": 70, "edi": 74, "dur": "5영업일", "pre": "검수", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "상세페이지", "work": "최종 검수·채널 업로드 완료", "sub": "스마트스토어·자사몰 업로드", "desc": "전 채널 상세 반영", "sw": 11, "ew": 11, "sdi": 70, "edi": 74, "dur": "5영업일", "pre": "교정", "gubun": "필수", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "생산", "work": "처방·용기/펌프 사양 최종 확정 → 벌크 발주", "sub": "성분 지정·처방 확정(OEM 의뢰)", "desc": "원하는 성분 구성을 지정해 OEM에 처방 의뢰·확정", "sw": 1, "ew": 1, "sdi": 0, "edi": 4, "dur": "5영업일", "pre": "-", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": "OEM 위탁(성분 지정형)"}, {"cat": "생산", "work": "처방·용기/펌프 사양 최종 확정 → 벌크 발주", "sub": "용기·펌프 사양 확정", "desc": "용기/펌프 스펙 확정", "sw": 1, "ew": 1, "sdi": 0, "edi": 4, "dur": "5영업일", "pre": "-", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "생산", "work": "처방·용기/펌프 사양 최종 확정 → 벌크 발주", "sub": "OEM 벌크 생산 발주", "desc": "확정 처방으로 OEM에 벌크 생산 발주", "sw": 1, "ew": 1, "sdi": 0, "edi": 4, "dur": "5영업일", "pre": "처방 확정", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "생산", "work": "부자재(단상자·라벨·용기) 사양 확정·발주", "sub": "부자재 사양·인쇄데이터 확정", "desc": "인쇄 칼선/사양 확정", "sw": 1, "ew": 1, "sdi": 0, "edi": 4, "dur": "5영업일", "pre": "패키지 디자인", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "임계경로 출발(4~6주)"}, {"cat": "생산", "work": "부자재(단상자·라벨·용기) 사양 확정·발주", "sub": "부자재 발주", "desc": "단상자·라벨·용기 발주", "sw": 1, "ew": 1, "sdi": 0, "edi": 4, "dur": "5영업일", "pre": "사양 확정", "gubun": "필수", "status": "예정", "owner": "확인필요", "note": "1주 미발주 시 전체 지연"}, {"cat": "생산", "work": "초도물량·안전재고 산정", "sub": "수요예측·발주수량·안전재고 결정", "desc": "초도/안전재고 산정", "sw": 1, "ew": 1, "sdi": 0, "edi": 4, "dur": "5영업일", "pre": "-", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": "재발주 리드타임 점검"}, {"cat": "생산", "work": "벌크 생산·품질검사 시작", "sub": "벌크 제조·반제품 QC", "desc": "OEM 벌크 제조·반제품 QC 점검", "sw": 2, "ew": 2, "sdi": 7, "edi": 11, "dur": "5영업일", "pre": "벌크 발주", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "OEM 진행"}, {"cat": "생산", "work": "부자재 제작 진행", "sub": "인쇄·성형 제작", "desc": "부자재 제작 (입고 8주)", "sw": 2, "ew": 2, "sdi": 7, "edi": 11, "dur": "5영업일", "pre": "부자재 발주", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "생산", "work": "시제품(파일럿) 확보 착수", "sub": "OEM 파일럿 시료 수령·평가", "desc": "OEM 제작 파일럿 시료 수령 후 내부 평가", "sw": 2, "ew": 2, "sdi": 7, "edi": 11, "dur": "5영업일", "pre": "-", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "임상·촬영용 시료"}, {"cat": "생산", "work": "시제품 확보 완료 → 임상·촬영·인플 배포", "sub": "시제품 수령·분배(임상/촬영/인플)", "desc": "다운스트림 3개로 배포", "sw": 3, "ew": 3, "sdi": 14, "edi": 18, "dur": "5영업일", "pre": "파일럿", "gubun": "필수", "status": "예정", "owner": "확인필요", "note": "다운스트림 동시 잠금 열쇠"}, {"cat": "생산", "work": "벌크·품질검사 마감", "sub": "벌크 QC 완료·합격", "desc": "품질검사 종료", "sw": 4, "ew": 4, "sdi": 21, "edi": 25, "dur": "5영업일", "pre": "벌크 생산", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "생산", "work": "충진·포장 시작", "sub": "충진·라벨·단상자 포장", "desc": "완제품 충진·포장", "sw": 7, "ew": 7, "sdi": 42, "edi": 46, "dur": "5영업일", "pre": "부자재+벌크", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "생산", "work": "완제품 입고", "sub": "입고검수·바코드·사용기한 등록", "desc": "입고 검수·등록", "sw": 8, "ew": 8, "sdi": 49, "edi": 53, "dur": "5영업일", "pre": "충진·포장", "gubun": "필수", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "스토어 정리", "work": "기존 스마트스토어 리스팅·카테고리·브랜드존 정리", "sub": "기존 상품·카테고리 정리", "desc": "노후 리스팅·카테고리 정돈", "sw": 9, "ew": 9, "sdi": 56, "edi": 60, "dur": "5영업일", "pre": "-", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": "가볍게 (메인 판매=자사몰)"}, {"cat": "스토어 정리", "work": "기존 스마트스토어 리스팅·카테고리·브랜드존 정리", "sub": "브랜드존·표시정보 점검", "desc": "브랜드존·기본정보 정리", "sw": 9, "ew": 9, "sdi": 56, "edi": 60, "dur": "5영업일", "pre": "-", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "오픈마켓", "work": "쿠팡 일반 입점", "sub": "입점 신청·서류 등록", "desc": "쿠팡 마켓플레이스 일반 입점 신청·사업자 서류 등록", "sw": 9, "ew": 9, "sdi": 56, "edi": 60, "dur": "5영업일", "pre": "사업자·완제품", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": "일반 입점(로켓 아님)"}, {"cat": "오픈마켓", "work": "쿠팡 일반 입점", "sub": "상품 등록·가격·배송 설정", "desc": "상품·옵션·가격·배송 정책 등록", "sw": 10, "ew": 10, "sdi": 63, "edi": 67, "dur": "5영업일", "pre": "상세·가격정책", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "오픈마켓", "work": "쿠팡 일반 입점", "sub": "채널 오픈", "desc": "런칭 맞춰 쿠팡 판매 개시", "sw": 12, "ew": 12, "sdi": 77, "edi": 81, "dur": "5영업일", "pre": "등록", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "인프라", "work": "결제(PG)·에스크로 신청·심사 착수", "sub": "PG사 선정·가입 신청", "desc": "PG/에스크로 신청", "sw": 7, "ew": 7, "sdi": 42, "edi": 46, "dur": "5영업일", "pre": "사업자", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": "카페24 내 PG 연동과 연계"}, {"cat": "인프라", "work": "결제(PG)·에스크로 신청·심사 착수", "sub": "심사 서류 제출·승인 대기", "desc": "심사 리드타임 소요", "sw": 7, "ew": 7, "sdi": 42, "edi": 46, "dur": "5영업일", "pre": "신청", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "미착수 시 런칭 지연"}, {"cat": "인프라", "work": "배송/택배사 계약·출고 프로세스", "sub": "택배사 계약·단가 협의", "desc": "택배 계약", "sw": 7, "ew": 7, "sdi": 42, "edi": 46, "dur": "5영업일", "pre": "-", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "인프라", "work": "배송/택배사 계약·출고 프로세스", "sub": "출고/풀필먼트 프로세스 확정", "desc": "3PL or 자체 출고 설계", "sw": 7, "ew": 7, "sdi": 42, "edi": 46, "dur": "5영업일", "pre": "계약", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "인프라", "work": "통신판매업 신고·약관/개인정보/표시사항 확정", "sub": "통신판매업 신고", "desc": "신고 접수", "sw": 8, "ew": 8, "sdi": 49, "edi": 53, "dur": "5영업일", "pre": "사업자·자사몰", "gubun": "필수", "status": "예정", "owner": "확인필요", "note": "법적 요건"}, {"cat": "인프라", "work": "통신판매업 신고·약관/개인정보/표시사항 확정", "sub": "약관·개인정보·전자상거래 표시 작성", "desc": "필수 고지문 작성·게시", "sw": 8, "ew": 8, "sdi": 49, "edi": 53, "dur": "5영업일", "pre": "-", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "인프라", "work": "CS 셋업(채널톡·반품/교환·FAQ)", "sub": "채널톡·CS 채널 연결", "desc": "상담 채널 세팅", "sw": 9, "ew": 9, "sdi": 56, "edi": 60, "dur": "5영업일", "pre": "-", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "인프라", "work": "CS 셋업(채널톡·반품/교환·FAQ)", "sub": "반품/교환 정책·FAQ 작성", "desc": "정책·FAQ 정비", "sw": 9, "ew": 9, "sdi": 56, "edi": 60, "dur": "5영업일", "pre": "-", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "인프라", "work": "CRM·알림톡·회원적립 셋업", "sub": "알림톡 템플릿·발송 연동", "desc": "주문/배송 알림 연동", "sw": 10, "ew": 10, "sdi": 63, "edi": 67, "dur": "5영업일", "pre": "-", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "인프라", "work": "CRM·알림톡·회원적립 셋업", "sub": "회원등급·적립·쿠폰 정책", "desc": "멤버십/리텐션 설계", "sw": 10, "ew": 10, "sdi": 63, "edi": 67, "dur": "5영업일", "pre": "-", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "인플", "work": "후보 리스트업 시작", "sub": "카테고리/팔로워/단가 기준 후보 수집", "desc": "후보 풀 구성", "sw": 3, "ew": 3, "sdi": 14, "edi": 18, "dur": "5영업일", "pre": "-", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": "제품 없어도 가능"}, {"cat": "인플", "work": "리스트업 마감 → 컨택 준비", "sub": "우선순위·컨택안 확정", "desc": "대상 확정·메시지 준비", "sw": 4, "ew": 4, "sdi": 21, "edi": 25, "dur": "5영업일", "pre": "리스트업", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "인플", "work": "컨택·단가 협의·계약 시작", "sub": "컨택·견적·계약(2차 사용권 포함)", "desc": "협의·계약", "sw": 5, "ew": 5, "sdi": 28, "edi": 32, "dur": "5영업일", "pre": "컨택안", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "마이크로 시딩 메인, 메가는 5주 게이트 결과 따름"}, {"cat": "인플", "work": "컨택·계약 마감", "sub": "계약 완료·일정 확정", "desc": "계약 마감·스케줄 픽스", "sw": 6, "ew": 6, "sdi": 35, "edi": 39, "dur": "5영업일", "pre": "계약 시작", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "인플", "work": "제품(준양산 샘플) 발송", "sub": "샘플 발송·가이드 전달", "desc": "제품+가이드 발송", "sw": 7, "ew": 7, "sdi": 42, "edi": 46, "dur": "5영업일", "pre": "샘플", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "인플", "work": "발송 마감", "sub": "수령 확인·콘텐츠 일정 조율", "desc": "수령 확인·일정 조율", "sw": 8, "ew": 8, "sdi": 49, "edi": 53, "dur": "5영업일", "pre": "발송", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "인플", "work": "콘텐츠 제작 마감", "sub": "콘텐츠 검수·승인", "desc": "초안 검수·승인", "sw": 10, "ew": 10, "sdi": 63, "edi": 67, "dur": "5영업일", "pre": "제작", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "인플", "work": "릴리즈 시작 — 권위형 앵커 게시", "sub": "앵커(권위형) 게시", "desc": "대형/권위 인플 우선 게시", "sw": 11, "ew": 11, "sdi": 70, "edi": 74, "dur": "5영업일", "pre": "승인", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "런칭 직전"}, {"cat": "인플", "work": "마이크로·숏폼 릴리즈 집중", "sub": "마이크로·숏폼 동시 릴리즈", "desc": "런칭 동시 확산", "sw": 12, "ew": 12, "sdi": 77, "edi": 81, "dur": "5영업일", "pre": "앵커", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "인플", "work": "메가 인플 GO/NO 결정", "sub": "메가 인플 진행 여부 결정(게이트)", "desc": "예산·기대효과 비교해 메가 진행 여부 결정", "sw": 5, "ew": 5, "sdi": 28, "edi": 32, "dur": "5영업일", "pre": "리스트업", "gubun": "필수", "status": "예정", "owner": "확인필요", "note": "NO=마이크로 집중 / GO=6주 컨택·계약"}, {"cat": "인허가", "work": "책임판매업(애즈이즈투비) 등록·표시기재 착수", "sub": "책임판매업자 정보·등록", "desc": "책판 등록 진행", "sw": 1, "ew": 1, "sdi": 0, "edi": 4, "dur": "5영업일", "pre": "-", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "인허가", "work": "책임판매업(애즈이즈투비) 등록·표시기재 착수", "sub": "표시기재 초안(전성분·주의·사용기한)", "desc": "라벨 표기 초안", "sw": 1, "ew": 1, "sdi": 0, "edi": 4, "dur": "5영업일", "pre": "-", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "인허가", "work": "CPNP·EU(Douglas) 트랙 별도 착수", "sub": "CPNP 등록 준비·RP 지정", "desc": "EU 책임자 지정·등록 준비", "sw": 2, "ew": 2, "sdi": 7, "edi": 11, "dur": "5영업일", "pre": "-", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": "국내 런칭과 분리된 병렬 장기 트랙(임계경로 아님)"}, {"cat": "인허가", "work": "CPNP·EU(Douglas) 트랙 별도 착수", "sub": "안전성평가(CPSR)용 시험자료 수집", "desc": "미생물·안정성·중금속·CMR 등 시험·자료 확보", "sw": 2, "ew": 10, "sdi": 7, "edi": 67, "dur": "45영업일", "pre": "처방·시제품", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "EU 롱폴, 12주 내 미완 가능"}, {"cat": "인허가", "work": "CPNP·EU(Douglas) 트랙 별도 착수", "sub": "안전성평가서(CPSR) 작성", "desc": "안전성평가사 통해 CPSR 작성", "sw": 6, "ew": 11, "sdi": 35, "edi": 74, "dur": "30영업일", "pre": "시험자료", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "장기 트랙"}, {"cat": "인허가", "work": "CPNP·EU(Douglas) 트랙 별도 착수", "sub": "제품정보파일(PIF) 구성", "desc": "PIF 문서 일체 구성·보관", "sw": 8, "ew": 12, "sdi": 49, "edi": 81, "dur": "25영업일", "pre": "CPSR", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "CPNP 등록 전 필수"}, {"cat": "인허가", "work": "책판·표시기재 확정 마감", "sub": "표시문구 최종 확정", "desc": "라벨 문구 픽스", "sw": 3, "ew": 3, "sdi": 14, "edi": 18, "dur": "5영업일", "pre": "초안", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "인허가", "work": "상표 출원·선등록 확인", "sub": "선등록 상표 검색", "desc": "자체 제품명·콜라보 결합명 선출원/등록 여부 검색", "sw": 1, "ew": 1, "sdi": 0, "edi": 4, "dur": "5영업일", "pre": "-", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": "분쟁·반려 리스크 차단"}, {"cat": "인허가", "work": "상표 출원·선등록 확인", "sub": "출원 결정·진행", "desc": "출원 여부 결정·대리인 통해 출원", "sw": 1, "ew": 1, "sdi": 0, "edi": 4, "dur": "5영업일", "pre": "선등록 검색", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "등록완료는 수개월(12주 밖)"}, {"cat": "임상", "work": "시험기관 확정·프로토콜·피험자 모집", "sub": "시험기관 선정·견적·계약", "desc": "기관 계약", "sw": 3, "ew": 3, "sdi": 14, "edi": 18, "dur": "5영업일", "pre": "시제품", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": "늦어도 3주 시작해야 9주 결과"}, {"cat": "임상", "work": "시험기관 확정·프로토콜·피험자 모집", "sub": "프로토콜·클레임 설계", "desc": "더마클 7종(진정·보습·각질·모공 노폐물 세정·자차 세정력·피부장벽·4시간 보습) 프로토콜 설계", "sw": 3, "ew": 3, "sdi": 14, "edi": 18, "dur": "5영업일", "pre": "기관", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "임상", "work": "시험기관 확정·프로토콜·피험자 모집", "sub": "피험자 모집", "desc": "모집·스크리닝", "sw": 3, "ew": 3, "sdi": 14, "edi": 18, "dur": "5영업일", "pre": "프로토콜", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "임상", "work": "인체적용시험 진행 시작", "sub": "시험 개시", "desc": "측정 시작", "sw": 4, "ew": 4, "sdi": 21, "edi": 25, "dur": "5영업일", "pre": "모집", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "임상", "work": "시험 진행 중 (중간)", "sub": "중간 점검", "desc": "경과 점검", "sw": 5, "ew": 5, "sdi": 28, "edi": 32, "dur": "5영업일", "pre": "-", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "임상", "work": "시험 진행 중", "sub": "진행", "desc": "측정 지속", "sw": 6, "ew": 7, "sdi": 35, "edi": 46, "dur": "10영업일", "pre": "-", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "임상", "work": "시험 종료 단계", "sub": "데이터 수집 종료·분석 착수", "desc": "측정 종료·분석", "sw": 8, "ew": 8, "sdi": 49, "edi": 53, "dur": "5영업일", "pre": "-", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "임상", "work": "결과 리포트 입수 → 효능 클레임 확정", "sub": "결과 리포트 수령·클레임 확정", "desc": "더마클 7종 유효성 결과 수령 → 상세 클레임 확정", "sw": 9, "ew": 9, "sdi": 56, "edi": 60, "dur": "5영업일", "pre": "분석", "gubun": "필수", "status": "예정", "owner": "확인필요", "note": "저자극(민감성)은 별도·후행(런칭 후 추가 가능)"}, {"cat": "임상", "work": "민감성·일차자극(저자극) 평가", "sub": "일차자극·민감성 시험(첩포)", "desc": "첩포 24h 반응·자극도 평가", "sw": 12, "ew": 13, "sdi": 77, "edi": 88, "dur": "10영업일", "pre": "시제품·기관", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "결과 9/4경 → 저자극 클레임 런칭 후 추가"}, {"cat": "자사몰(카페24)", "work": "카페24 구독·기본 세팅", "sub": "카페24 요금제 구독·쇼핑몰 생성", "desc": "계정·쇼핑몰 개설", "sw": 1, "ew": 1, "sdi": 0, "edi": 4, "dur": "5영업일", "pre": "-", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": "구매형 → 자체개발 불필요"}, {"cat": "자사몰(카페24)", "work": "카페24 구독·기본 세팅", "sub": "도메인 연결·기본정보·SSL", "desc": "도메인/SSL/기본정보", "sw": 1, "ew": 1, "sdi": 0, "edi": 4, "dur": "5영업일", "pre": "구독", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "자사몰(카페24)", "work": "디자인 요소 기획", "sub": "메인/배너/상세 톤·구성 기획", "desc": "외부 패키지와 톤 통일", "sw": 2, "ew": 2, "sdi": 7, "edi": 11, "dur": "5영업일", "pre": "-", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "자사몰(카페24)", "work": "디자인 요소 제작", "sub": "메인 스킨·배너 디자인", "desc": "메인/배너 비주얼 제작", "sw": 6, "ew": 6, "sdi": 35, "edi": 39, "dur": "5영업일", "pre": "촬영 소재", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "자사몰(카페24)", "work": "디자인 요소 제작", "sub": "상품 상세·기획전 디자인", "desc": "상세/기획전 디자인", "sw": 9, "ew": 9, "sdi": 56, "edi": 60, "dur": "5영업일", "pre": "상세·임상클레임", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "핵심 선행=디자인 요소"}, {"cat": "자사몰(카페24)", "work": "결제·배송·약관 세팅", "sub": "카페24 결제수단·배송정책·약관 연결", "desc": "PG/배송/약관 연동", "sw": 8, "ew": 8, "sdi": 49, "edi": 53, "dur": "5영업일", "pre": "PG·배송계약", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "인프라와 연동"}, {"cat": "자사몰(카페24)", "work": "디자인 요소 적용·핸드오버", "sub": "스킨 업로드·적용·검수", "desc": "디자인 요소 적용", "sw": 10, "ew": 10, "sdi": 63, "edi": 67, "dur": "5영업일", "pre": "디자인 제작", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "자사몰(카페24)", "work": "상품 등록·상세 반영", "sub": "신제품 등록·옵션·가격·상세 적용", "desc": "상품/상세 셋업", "sw": 10, "ew": 10, "sdi": 63, "edi": 67, "dur": "5영업일", "pre": "상세 업로드", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "자사몰(카페24)", "work": "트래킹·픽셀 적용 확인", "sub": "GA4·픽셀 스크립트 삽입·확인", "desc": "측정코드 적용 확인", "sw": 10, "ew": 10, "sdi": 63, "edi": 67, "dur": "5영업일", "pre": "트래킹 세팅", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "자사몰(카페24)", "work": "소프트오픈·QA", "sub": "결제·모바일·트래킹 전체 QA", "desc": "오픈 전 통합 점검", "sw": 11, "ew": 11, "sdi": 70, "edi": 74, "dur": "5영업일", "pre": "적용·등록", "gubun": "필수", "status": "예정", "owner": "확인필요", "note": "버퍼 주차"}, {"cat": "자사몰(카페24)", "work": "정식 오픈", "sub": "자사몰 오픈", "desc": "런칭과 동시 공개", "sw": 12, "ew": 12, "sdi": 77, "edi": 81, "dur": "5영업일", "pre": "소프트오픈 QA", "gubun": "필수", "status": "예정", "owner": "확인필요", "note": "임계경로 아님(카페24)"}, {"cat": "자사몰(카페24)", "work": "운영 리허설(드라이런)", "sub": "주문→결제→출고→CS 1건 통과 테스트", "desc": "실제 주문 1건으로 결제·출고·CS 전 과정 드라이런", "sw": 11, "ew": 11, "sdi": 70, "edi": 74, "dur": "5영업일", "pre": "소프트오픈 QA", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "운영 공백 사전 차단"}, {"cat": "콜라보", "work": "브랜드명 사용권 계약·로고 가이드·표시 검토", "sub": "사용권 범위·로고 가이드·표시 검토", "desc": "라이선스 범위·표기 검토", "sw": 1, "ew": 1, "sdi": 0, "edi": 4, "dur": "5영업일", "pre": "-", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": "패키지/상세 노출 시 선행"}, {"cat": "콜라보", "work": "(마케팅 콜라보) 공동 콘텐츠·이벤트 방향 협의", "sub": "공동 캠페인 방향·역할 협의", "desc": "역할 분담·방향 합의", "sw": 6, "ew": 6, "sdi": 35, "edi": 39, "dur": "5영업일", "pre": "-", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "영향 낮음·병렬"}, {"cat": "콜라보", "work": "공동 콘텐츠·이벤트 게시 준비", "sub": "콘텐츠 제작·게시 일정 확정", "desc": "공동 콘텐츠 준비", "sw": 11, "ew": 11, "sdi": 70, "edi": 74, "dur": "5영업일", "pre": "협의", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "콜라보", "work": "공동 이벤트 노출", "sub": "런칭 연계 노출", "desc": "공동 이벤트 오픈", "sw": 12, "ew": 12, "sdi": 77, "edi": 81, "dur": "5영업일", "pre": "준비", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "트래킹", "work": "GA4+네이버/카카오/메타 픽셀+전환이벤트·UTM 세팅", "sub": "GA4 속성 생성·태그 설치", "desc": "측정ID 발급·GTM 컨테이너·기본태그", "sw": 9, "ew": 9, "sdi": 56, "edi": 60, "dur": "5영업일", "pre": "사이트 live", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": "인플 앵커 게시 前 가동 필수"}, {"cat": "트래킹", "work": "GA4+네이버/카카오/메타 픽셀+전환이벤트·UTM 세팅", "sub": "네이버 전환스크립트·프리미엄로그 설치", "desc": "네이버 전환/로그 연동", "sw": 9, "ew": 9, "sdi": 56, "edi": 60, "dur": "5영업일", "pre": "GA4", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "트래킹", "work": "GA4+네이버/카카오/메타 픽셀+전환이벤트·UTM 세팅", "sub": "카카오 픽셀 설치", "desc": "카카오 픽셀 연동", "sw": 9, "ew": 9, "sdi": 56, "edi": 60, "dur": "5영업일", "pre": "GA4", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "트래킹", "work": "GA4+네이버/카카오/메타 픽셀+전환이벤트·UTM 세팅", "sub": "메타(페이스북) 픽셀 설치", "desc": "메타 픽셀 연동", "sw": 9, "ew": 9, "sdi": 56, "edi": 60, "dur": "5영업일", "pre": "GA4", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "트래킹", "work": "GA4+네이버/카카오/메타 픽셀+전환이벤트·UTM 세팅", "sub": "전환 이벤트 정의·설치", "desc": "구매·장바구니·가입·문의 이벤트", "sw": 9, "ew": 9, "sdi": 56, "edi": 60, "dur": "5영업일", "pre": "픽셀", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "트래킹", "work": "GA4+네이버/카카오/메타 픽셀+전환이벤트·UTM 세팅", "sub": "UTM 규칙 수립·캠페인 관리표", "desc": "source/medium/campaign 표준화", "sw": 9, "ew": 9, "sdi": 56, "edi": 60, "dur": "5영업일", "pre": "-", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "트래킹", "work": "전환·픽셀 작동 검증", "sub": "실거래 테스트·디버깅", "desc": "태그매니저/픽셀헬퍼로 디버깅", "sw": 10, "ew": 10, "sdi": 63, "edi": 67, "dur": "5영업일", "pre": "세팅", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "트래킹", "work": "전환·픽셀 작동 검증", "sub": "채널별 전환 일치 확인", "desc": "채널 간 전환 수치 대조", "sw": 10, "ew": 10, "sdi": 63, "edi": 67, "dur": "5영업일", "pre": "테스트", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "트래킹", "work": "런칭 데이터 모니터링 대시보드 가동", "sub": "대시보드·KPI 모니터링", "desc": "런칭 데이터 실시간 추적", "sw": 12, "ew": 12, "sdi": 77, "edi": 81, "dur": "5영업일", "pre": "검증", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "런칭후 운영", "work": "런칭 직후 운영·최적화", "sub": "초기 성과·KPI 리뷰", "desc": "런칭 1~2주 매출·전환·유입 KPI 점검", "sw": 13, "ew": 13, "sdi": 84, "edi": 88, "dur": "5영업일", "pre": "런칭", "gubun": "착수", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "런칭후 운영", "work": "런칭 직후 운영·최적화", "sub": "리뷰·후기·CS 모니터링", "desc": "초기 후기 관리·CS 인입 대응", "sw": 13, "ew": 13, "sdi": 84, "edi": 88, "dur": "5영업일", "pre": "런칭", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}, {"cat": "런칭후 운영", "work": "런칭 직후 운영·최적화", "sub": "재고 소진 추이·재발주 트리거", "desc": "판매 속도 점검·재발주 시점 판단", "sw": 13, "ew": 13, "sdi": 84, "edi": 88, "dur": "5영업일", "pre": "런칭", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": "안전재고 연동"}, {"cat": "런칭후 운영", "work": "런칭 직후 운영·최적화", "sub": "채널 광고효율 비교·예산 재배분", "desc": "채널별 ROAS 비교 후 예산 재배분", "sw": 13, "ew": 13, "sdi": 84, "edi": 88, "dur": "5영업일", "pre": "트래킹 데이터", "gubun": "진행", "status": "예정", "owner": "확인필요", "note": null}], "catMeta": {"디자인": {"color": "#3182F6", "icon": "디"}, "소재": {"color": "#F77F00", "icon": "소"}, "상품기획·가격": {"color": "#06A96E", "icon": "가"}, "마케팅": {"color": "#E63946", "icon": "마"}, "광고세팅": {"color": "#8338EC", "icon": "광"}, "상세페이지": {"color": "#0891B2", "icon": "상"}, "생산": {"color": "#D97706", "icon": "생"}, "스토어 정리": {"color": "#DB2777", "icon": "스"}, "오픈마켓": {"color": "#16A34A", "icon": "오"}, "인프라": {"color": "#6366F1", "icon": "인"}, "인플": {"color": "#EC4899", "icon": "플"}, "인허가": {"color": "#0EA5E9", "icon": "허"}, "임상": {"color": "#14B8A6", "icon": "임"}, "자사몰(카페24)": {"color": "#F59E0B", "icon": "자"}, "콜라보": {"color": "#A855F7", "icon": "콜"}, "트래킹": {"color": "#EF4444", "icon": "트"}, "런칭후 운영": {"color": "#10B981", "icon": "운"}}, "catOrder": ["디자인", "소재", "상품기획·가격", "마케팅", "광고세팅", "상세페이지", "생산", "스토어 정리", "오픈마켓", "인프라", "인플", "인허가", "임상", "자사몰(카페24)", "콜라보", "트래킹", "런칭후 운영"], "anchorISO": "2026-06-15", "todayISO": "2026-06-12", "launchSdi": 77, "NW": 13, "ND": 91};
+const CAT=D.catMeta, CAT_ORDER=D.catOrder, NW=D.NW, ND=D.ND, COLW={week:66, day:24};
+const DOW=['일','월','화','수','목','금','토'];
 
-const STATE = { tasks:[], loaded:false };
-const active = new Set();
-let sortKey = "start";
-let editingId = null;
+function parseISO(s){const a=s.split('-').map(Number); return new Date(a[0],a[1]-1,a[2]);}
+function addDays(dt,n){const x=new Date(dt); x.setDate(x.getDate()+n); return x;}
+function md(dt){return (dt.getMonth()+1)+'/'+dt.getDate();}
+const DEFAULT_ANCHOR=parseISO(D.anchorISO), TODAY=parseISO(D.todayISO);
+let ANCHOR=new Date(DEFAULT_ANCHOR);
 
-const $ = s=>document.querySelector(s);
-
-// ── loading bar (0→90→100, once) ──
-const topbar=$("#topbar"), topfill=$("#topfill");
-let _pending=0,_loadTimer=null;
-function startLoad(){ clearInterval(_loadTimer); topbar.classList.add("active"); topfill.style.transition="width .2s ease"; topfill.style.width="0%"; let w=0;
-  _loadTimer=setInterval(()=>{ w+=Math.max(0.5,(90-w)*0.12); if(w>=90){w=90;clearInterval(_loadTimer);} topfill.style.width=w.toFixed(1)+"%"; },80); }
-function endLoad(){ clearInterval(_loadTimer); topfill.style.width="100%"; setTimeout(()=>{ topbar.classList.remove("active"); topfill.style.transition="none"; topfill.style.width="0%"; },280); }
-function load(on){ if(on){ _pending++; if(_pending===1) startLoad(); } else { _pending=Math.max(0,_pending-1); if(_pending===0) endLoad(); } }
-function toast(msg,err){ const t=$("#toast"); t.textContent=msg; t.className=(err?"err ":"")+"show"; setTimeout(()=>t.className=t.className.replace("show",""),2200); }
-
-// ── API ──
-async function apiGetAll(){ const res=await fetch(APPS_SCRIPT_URL+'?action=all'); const j=await res.json(); if(!j.ok) throw new Error(j.error||'load error'); return j.data; }
-async function apiPost(p){ const res=await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify(Object.assign({secret:SECRET_KEY},p))}); const j=await res.json(); if(!j.ok) throw new Error(j.error||'API error'); return j; }
-
-// ── date helpers ──
-function pIso(s){ return new Date(String(s).slice(0,10)+'T00:00:00'); }
-function fmtISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
-function addDays(d,n){ const x=new Date(d); x.setDate(x.getDate()+n); return x; }
-function diffDays(a,b){ return Math.round((b-a)/86400000); }
-function fmtMD(d){ return (d.getMonth()+1)+'.'+d.getDate(); }
-function fmtSlash(d){ return (d.getMonth()+1)+'/'+d.getDate(); }
-function mondayOnBefore(d){ const x=new Date(d); const off=(x.getDay()+6)%7; return addDays(x,-off); }
-
-function norm(r){
-  let start=String(r.start_date||'').slice(0,10);
-  let end=String(r.end_date||'').slice(0,10);
-  if(!start && end) start=end; if(!end && start) end=start;
-  if(!start && !end){ start='2026-06-08'; end='2026-06-08'; }
-  let dur=Number(r.duration); if(!dur||dur<1) dur=diffDays(pIso(start),pIso(end))+1;
-  return { id:r.task_id, stage:r.stage, name:r.name, type:r.type, start, end, duration:dur,
-    assignee:r.assignee||'', status:STATUSES.includes(r.status)?r.status:'미착수' };
-}
-function visible(){
-  let r=STATE.tasks.filter(t=>active.has(t.stage));
-  if(sortKey==="start") r.sort((a,b)=>a.start<b.start?-1:a.start>b.start?1:(a.end<b.end?-1:1));
-  else if(sortKey==="end") r.sort((a,b)=>a.end<b.end?-1:a.end>b.end?1:0);
-  else if(sortKey==="dur") r.sort((a,b)=>b.duration-a.duration);
-  else r.sort((a,b)=>STAGES.indexOf(a.stage)-STAGES.indexOf(b.stage)||(a.start<b.start?-1:1));
-  return r;
+function curWeeks(){const a=[]; for(let w=1;w<=NW;w++){const mon=addDays(ANCHOR,(w-1)*7); a.push({w, mon:md(mon), fri:md(addDays(mon,4)), month:mon.getMonth()+1});} return a;}
+function curDays(){const a=[]; for(let i=0;i<ND;i++){const dt=addDays(ANCHOR,i); const g=dt.getDay(); a.push({i, d:dt.getDate(), dow:DOW[g], we:(g===0||g===6), w:Math.floor(i/7)+1});} return a;}
+function todayOff(){return Math.round((TODAY-ANCHOR)/86400000);}
+function todayPos(view){
+  const off=todayOff();
+  if(off<0) return {state:'pre', cols:0, label:'오늘 (착수 전)'};
+  if(off>=ND) return {state:'post', cols:(view==='day'?ND:NW), label:'오늘 (종료 후)'};
+  return {state:'in', cols:(view==='day'?(off+1):((off+1)/7)), label:'오늘'};
 }
 
-function renderSummary(){
-  const c={"미착수":0,"진행중":0,"완료":0,"지연":0};
-  STATE.tasks.forEach(t=>c[t.status]=(c[t.status]||0)+1);
-  const cls={"미착수":"todo","진행중":"prog","완료":"done","지연":"delay"};
-  $("#summary").innerHTML=STATUSES.map(s=>`<div class="stat ${cls[s]}"><div class="n">${c[s]}</div><div class="l">${s}</div></div>`).join("");
-  const total=STATE.tasks.length, pct=total?Math.round(c["완료"]/total*100):0;
-  $("#pctBar").style.width=pct+"%"; $("#pctLabel").textContent="진행률 "+pct+"%"; $("#pctSub").textContent="완료 "+c["완료"]+" / "+total;
-}
-
-function renderGantt(){
-  const rows=visible();
-  if(!rows.length){ $("#gantt").innerHTML=`<div class="empty">표시할 작업이 없습니다.</div>`; return; }
-  let minS=pIso(rows[0].start), maxE=pIso(rows[0].end);
-  rows.forEach(t=>{ const s=pIso(t.start),e=pIso(t.end); if(s<minS)minS=s; if(e>maxE)maxE=e; });
-  const axisStart=mondayOnBefore(minS);
-  let weeks=Math.ceil((diffDays(axisStart,maxE)+1)/7); if(weeks<1) weeks=1;
-  const totalDays=weeks*7;
-  const colpct=100/weeks;
-  let headCells="";
-  for(let i=0;i<weeks;i++) headCells+=`<div class="wc">${fmtSlash(addDays(axisStart,i*7))}</div>`;
-  const head=`<div class="grow ghead"><div></div><div class="htrack" style="grid-template-columns:repeat(${weeks},1fr)">${headCells}</div></div>`;
-  const gridBg=`background-image:repeating-linear-gradient(to right,var(--line) 0 1px,transparent 1px calc(100%/${weeks}))`;
-  const body=rows.map(t=>{
-    const sc=stageColor(t.stage), mile=t.type==="마일스톤";
-    const left=diffDays(axisStart,pIso(t.start))/totalDays*100;
-    const width=t.duration/totalDays*100;
-    const bar=`<div class="gbar ${sc}${mile?' mile':''}" style="left:${left}%;width:${width}%" data-id="${t.id}" title="${t.name} · ${t.start} ~ ${t.end} (${t.duration}일)">${mile?'★':''}</div>`;
-    return `<div class="grow"><div class="glabel"><span class="dot8 ${sc}"></span>${mile?'★ ':''}${t.name}</div><div class="gtrack" style="${gridBg}">${bar}</div></div>`;
-  }).join("");
-  $("#gantt").innerHTML=head+body;
-  $("#gantt").querySelectorAll(".gbar").forEach(b=>b.onclick=()=>cycle(b.dataset.id));
-}
-
-function stageOptions(sel){ return STAGES.map(s=>`<option${s===sel?' selected':''}>${s}</option>`).join(''); }
-function typeOptions(sel){ return ['진행','착수','마일스톤'].map(s=>`<option${s===sel?' selected':''}>${s}</option>`).join(''); }
-
-function renderFilters(){
-  let html=`<button class="chip all" data-stage="all" data-on="${active.size===STAGES.length?'1':'0'}">전체</button>`;
-  STAGES.forEach(s=>{ html+=`<button class="chip ${stageColor(s)}" data-stage="${s}" data-on="${active.has(s)?'1':'0'}">${s}</button>`; });
-  const f=$("#filters"); f.innerHTML=html;
-  f.querySelectorAll(".chip").forEach(ch=>{
-    ch.onclick=()=>{ const st=ch.dataset.stage;
-      if(st==="all"){ const on=ch.dataset.on!=="1"; STAGES.forEach(s=>active[on?"add":"delete"](s)); }
-      else { active.has(st)?active.delete(st):active.add(st); }
-      renderFilters(); renderGantt(); renderList(); };
+function buildTree(rows){
+  const cats=[], cmap={};
+  rows.forEach(r=>{
+    if(!cmap[r.cat]){cmap[r.cat]={name:r.cat,works:[],wmap:{},rows:[]}; cats.push(cmap[r.cat]);}
+    const c=cmap[r.cat]; c.rows.push(r);
+    if(!c.wmap[r.work]){c.wmap[r.work]={name:r.work,subs:[]}; c.works.push(c.wmap[r.work]);}
+    c.wmap[r.work].subs.push(r);
   });
+  const sp=arr=>({sw:Math.min(...arr.map(x=>x.sw)),ew:Math.max(...arr.map(x=>x.ew)),sdi:Math.min(...arr.map(x=>x.sdi)),edi:Math.max(...arr.map(x=>x.edi))});
+  cats.forEach(c=>{Object.assign(c,sp(c.rows)); c.works.forEach(w=>Object.assign(w,sp(w.subs)));});
+  cats.sort((a,b)=>CAT_ORDER.indexOf(a.name)-CAT_ORDER.indexOf(b.name));
+  return cats;
+}
+const TREE=buildTree(D.rows);
+const ST={view:'week', filter:'all', collapsedCat:{}, collapsedWork:{}};
+
+function el(t,a,ch){const e=document.createElement(t);
+  if(a)for(const k in a){if(k==='class')e.className=a[k];else if(k==='style'&&typeof a[k]==='object')Object.assign(e.style,a[k]);else if(k.startsWith('on'))e.addEventListener(k.slice(2).toLowerCase(),a[k]);else if(a[k]!=null)e.setAttribute(k,a[k]);}
+  if(ch!=null)(Array.isArray(ch)?ch:[ch]).forEach(c=>{if(c==null||c===false)return; e.appendChild(typeof c==='string'?document.createTextNode(c):c);});
+  return e;}
+
+function pos(t){if(ST.view==='day')return {s:t.sdi, span:t.edi-t.sdi+1}; return {s:t.sw-1, span:t.ew-t.sw+1};}
+const L=s=>'calc(var(--tl-col-w) * '+s+')';
+const Wd=n=>'calc(var(--tl-col-w) * '+n+')';
+
+function todayLine(){const tp=todayPos(ST.view);
+  return el('div',{class:'tl-today-line'+(tp.state!=='in'?' edge':''),style:{left:(tp.state==='pre'?'0px':'calc(var(--tl-col-w) * '+tp.cols+')')}});}
+
+function renderStats(){const box=document.getElementById('stats'); box.innerHTML='';
+  const must=D.rows.filter(r=>r.gubun==='필수').length;
+  [['대분류',TREE.length],['작업',TREE.reduce((s,c)=>s+c.works.length,0)],['세부작업',D.rows.length],['필수',must]]
+   .forEach(([l,n])=>box.appendChild(el('div',{class:'stat'},[el('div',{class:'num'},String(n)),el('div',{class:'lbl'},l)])));}
+
+function renderControls(){const c=document.getElementById('controls'); c.innerHTML='';
+  const seg=el('div',{class:'seg'});
+  [['week','주 간트'],['day','일 간트'],['list','주차별 리스트']].forEach(([v,lb])=>
+    seg.appendChild(el('button',{class:ST.view===v?'active':'',onclick:()=>{ST.view=v; render(); scrollToday();}},lb)));
+  c.appendChild(seg);
+  if(ST.view!=='list'){
+    const allCat=v=>{TREE.forEach(x=>ST.collapsedCat[x.name]=v); render();};
+    const allWork=v=>{TREE.forEach(x=>x.works.forEach(w=>ST.collapsedWork[x.name+'|'+w.name]=v)); render();};
+    const grp=(label,onOpen,onClose)=>el('div',{class:'grp'},[el('span',{},label),
+      el('button',{title:label+' 모두 펼치기',onclick:onOpen},'⊞'), el('button',{title:label+' 모두 접기',onclick:onClose},'⊟')]);
+    const depth=el('div',{class:'depth'},['전체 토글']);
+    depth.appendChild(grp('대분류', ()=>allCat(false), ()=>allCat(true)));
+    depth.appendChild(grp('작업', ()=>{allCat(false); allWork(false);}, ()=>allWork(true)));
+    depth.appendChild(grp('세부작업', ()=>{ST.collapsedCat={}; ST.collapsedWork={}; render();}, ()=>{TREE.forEach(x=>ST.collapsedCat[x.name]=false); allWork(true);}));
+    c.appendChild(depth);
+  }
+  c.appendChild(el('div',{class:'tl-spacer'}));
+  if(ST.view!=='list') c.appendChild(el('button',{class:'tl-btn accent',onclick:scrollToday},'📍 오늘로'));
 }
 
-function renderList(){
-  const rows=visible();
-  if(!rows.length){ $("#list").innerHTML=`<div class="empty">표시할 작업이 없습니다.</div>`; return; }
-  $("#list").innerHTML=rows.map(t=>{
-    const sc=stageColor(t.stage), mile=t.type==="마일스톤";
-    if(t.id===editingId){
-      return `<div class="item editing">
-        <div class="fld" style="margin-bottom:10px"><label>작업명</label><input type="text" class="e_name" value="${(t.name||'').replace(/"/g,'&quot;')}"></div>
-        <div class="edit-grid">
-          <div class="fld"><label>단계</label><select class="e_stage">${stageOptions(t.stage)}</select></div>
-          <div class="fld"><label>유형</label><select class="e_type">${typeOptions(t.type)}</select></div>
-          <div class="fld"><label>시작일</label><input type="date" class="e_start" value="${t.start}"></div>
-          <div class="fld"><label>종료일</label><input type="date" class="e_end" value="${t.end}"></div>
-          <div class="fld"><label>기간(일)</label><input type="number" class="e_dur" min="1" value="${t.duration}"></div>
-          <div class="edit-actions">
-            <button class="cancelbtn e_cancel">취소</button>
-            <button class="savebtn e_save" data-id="${t.id}">저장</button>
-          </div>
-        </div></div>`;
-    }
-    return `<div class="item">
-      <span class="badge ${sc}">${t.stage}</span>
-      <div class="body"><div class="name">${mile?'<span class="star">★</span>':''}${t.name}</div>
-        <div class="meta"><span>${t.start} – ${t.end} · ${t.duration}일 · ${t.type}</span>
-        <input class="asg" placeholder="담당" value="${(t.assignee||'').replace(/"/g,'&quot;')}" data-id="${t.id}"></div></div>
-      <div class="actions">
-        <button class="status" data-s="${t.status}" data-id="${t.id}">${t.status}</button>
-        <button class="edit" data-id="${t.id}" title="수정">✏️</button>
-        <button class="del" data-id="${t.id}" title="삭제">✕</button>
-      </div></div>`;
-  }).join("");
-  $("#list").querySelectorAll(".status").forEach(b=>b.onclick=()=>cycle(b.dataset.id));
-  $("#list").querySelectorAll(".del").forEach(b=>b.onclick=()=>removeTask(b.dataset.id));
-  $("#list").querySelectorAll(".edit").forEach(b=>b.onclick=()=>startEdit(b.dataset.id));
-  $("#list").querySelectorAll(".e_save").forEach(b=>b.onclick=()=>saveEdit(b.dataset.id));
-  $("#list").querySelectorAll(".e_cancel").forEach(b=>b.onclick=()=>cancelEdit());
-  $("#list").querySelectorAll(".asg").forEach(inp=>{ inp.onblur=()=>saveAssignee(inp.dataset.id,inp.value.trim()); inp.onkeydown=e=>{ if(e.key==='Enter') inp.blur(); }; });
-  bindLinks($("#list .e_start"),$("#list .e_end"),$("#list .e_dur"));
-  const ne=$("#list .e_name"); if(ne){ ne.focus(); ne.setSelectionRange(ne.value.length,ne.value.length); }
-}
-function renderAll(){ renderSummary(); renderGantt(); renderList(); }
+function renderToolbar(){const tb=document.getElementById('toolbar'); tb.innerHTML='';
+  const mk=(key,label,color)=>el('button',{class:'tl-chip'+(ST.filter===key?' active':''),onclick:()=>{ST.filter=key; render();}},
+    [el('span',{class:'tl-chip-dot',style:{background:color}}),label]);
+  tb.appendChild(mk('all','전체','linear-gradient(135deg,#3182F6,#A855F7)'));
+  CAT_ORDER.forEach(c=>tb.appendChild(mk(c,c,CAT[c].color)));}
 
-// ── start/end/duration linkage ──
-function bindLinks(s,e,d){
-  if(!s||!e||!d) return;
-  s.onchange=()=>{ const dur=Math.max(1,Number(d.value)||1); e.value=fmtISO(addDays(pIso(s.value),dur-1)); };
-  d.onchange=()=>{ let dur=Math.max(1,Number(d.value)||1); d.value=dur; e.value=fmtISO(addDays(pIso(s.value),dur-1)); };
-  e.onchange=()=>{ const sd=pIso(s.value), ed=pIso(e.value); if(ed<sd){ s.value=e.value; d.value=1; } else { d.value=diffDays(sd,ed)+1; } };
-}
+function scrollToday(){const wrap=document.getElementById('board'); if(!wrap)return;
+  if(ST.view==='list'){const h=wrap.querySelector('.tl-wk-head.curr'); if(h)h.scrollIntoView({block:'start'}); return;}
+  const off=todayOff(); const s=Math.max(0, ST.view==='day'?off:Math.floor(off/7));
+  wrap.scrollTo({left:Math.max(0,s*COLW[ST.view]-160),behavior:'smooth'});}
 
-// ── actions ──
-function startEdit(id){ editingId=id; renderList(); }
-function cancelEdit(){ editingId=null; renderList(); }
-async function saveEdit(id){
-  const t=STATE.tasks.find(x=>x.id===id); if(!t) return;
-  const box=$("#list");
-  const name=box.querySelector(".e_name").value.trim();
-  const stage=box.querySelector(".e_stage").value;
-  const type=box.querySelector(".e_type").value;
-  const start=box.querySelector(".e_start").value;
-  let dur=Math.max(1,Number(box.querySelector(".e_dur").value)||1);
-  if(!name){ toast('작업명을 입력하세요',true); return; }
-  const end=fmtISO(addDays(pIso(start),dur-1));
-  const prev={stage:t.stage,name:t.name,type:t.type,start:t.start,end:t.end,duration:t.duration};
-  Object.assign(t,{stage,name,type,start,end,duration:dur});
-  editingId=null; renderAll(); load(true);
-  try{ await apiPost({action:'update',sheet:'tasks',id,data:{stage,name,type,start_date:start,end_date:end,duration:dur}}); toast('✓ 수정 저장'); }
-  catch(err){ Object.assign(t,prev); renderAll(); toast('저장 실패: '+err.message,true); }
-  finally{ load(false); }
-}
-async function cycle(id){
-  const t=STATE.tasks.find(x=>x.id===id); if(!t) return;
-  const prev=t.status; t.status=STATUSES[(STATUSES.indexOf(t.status)+1)%4];
-  renderSummary(); renderGantt(); renderList(); load(true);
-  try{ await apiPost({action:'update',sheet:'tasks',id,data:{status:t.status}}); toast('✓ 저장됨'); }
-  catch(err){ t.status=prev; renderSummary(); renderGantt(); renderList(); toast('저장 실패: '+err.message,true); }
-  finally{ load(false); }
-}
-async function saveAssignee(id,val){
-  const t=STATE.tasks.find(x=>x.id===id); if(!t||t.assignee===val) return;
-  const prev=t.assignee; t.assignee=val; load(true);
-  try{ await apiPost({action:'update',sheet:'tasks',id,data:{assignee:val}}); toast('✓ 담당 저장'); }
-  catch(err){ t.assignee=prev; renderList(); toast('저장 실패: '+err.message,true); }
-  finally{ load(false); }
-}
-async function removeTask(id){
-  const t=STATE.tasks.find(x=>x.id===id); if(!t) return;
-  if(!confirm('"'+t.name+'" 작업을 삭제할까요?')) return;
-  const idx=STATE.tasks.indexOf(t); STATE.tasks.splice(idx,1); renderAll(); load(true);
-  try{ await apiPost({action:'delete',sheet:'tasks',id}); toast('✓ 삭제됨'); }
-  catch(err){ STATE.tasks.splice(idx,0,t); renderAll(); toast('삭제 실패: '+err.message,true); }
-  finally{ load(false); }
-}
-async function addTask(){
-  const name=$("#f_name").value.trim();
-  if(!name){ toast('작업명을 입력하세요',true); return; }
-  const start=$("#f_start").value; let dur=Math.max(1,Number($("#f_dur").value)||1);
-  const end=fmtISO(addDays(pIso(start),dur-1));
-  const data={ stage:$("#f_stage").value, name, type:$("#f_type").value, start_date:start, end_date:end, duration:dur, assignee:'', status:'미착수', note:'' };
-  load(true);
-  try{ const res=await apiPost({action:'create',sheet:'tasks',data}); STATE.tasks.push(norm(res.data)); $("#f_name").value=''; $("#addcard").classList.remove('open'); renderAll(); toast('✓ 작업 추가됨'); }
-  catch(err){ toast('추가 실패: '+err.message,true); }
-  finally{ load(false); }
+function mkBar(r,col){const p=pos(r);
+  return el('div',{class:'tl-bar'+(r.gubun==='필수'?' must':''),
+    style:{left:'calc('+L(p.s)+' + 2px)',width:'calc('+Wd(p.span)+' - 4px)',background:col},
+    title:r.sub+' (W'+r.sw+'–W'+r.ew+')',
+    onclick:e=>{e.stopPropagation(); openModal(r);}},[el('span',{class:'tl-bar-text'},r.sub)]);}
+function groupBar(node,col,lv2){const p=pos(node);
+  return el('div',{class:'tl-group-bar'+(lv2?' lv2':''),style:{left:L(p.s),width:Wd(p.span),background:col,opacity:lv2?.6:.45}});}
+
+function renderGantt(board){
+  const colw=COLW[ST.view]; const WEEKS=curWeeks(), DAYS=curDays(); const off=todayOff();
+  const grid=el('div',{class:'tl-grid',style:{'--tl-col-w':colw+'px','min-width':'calc(var(--tl-left-w) + '+colw*(ST.view==='day'?ND:NW)+'px)'}});
+  grid.appendChild(el('div',{class:'tl-axis-corner'},ST.view==='day'?'작업 / 일자':'작업 / W1–W'+NW));
+  const axis=el('div',{class:'tl-axis-bar'});
+  const top=el('div',{class:'tl-axis-top'}); const cells=el('div',{class:'tl-axis-cells'});
+  if(ST.view==='day'){
+    WEEKS.forEach(w=>top.appendChild(el('div',{class:'tl-axis-topcell wkbound',style:{width:'calc(var(--tl-col-w) * 7)'}},['W'+w.w, el('span',{class:'mn'},w.mon)])));
+    DAYS.forEach(dd=>cells.appendChild(el('div',{class:'tl-axis-cell'+(dd.we?' we':'')+(dd.i===off?' curr':'')+(dd.i%7===6?' wkbound':'')},
+      [el('div',{class:'c1'},String(dd.d)), el('div',{class:'c2'},dd.dow)])));
+  } else {
+    const mg=[]; let cur=null;
+    WEEKS.forEach(w=>{if(cur&&cur.m===w.month)cur.n++; else{cur={m:w.month,n:1}; mg.push(cur);}});
+    mg.forEach(g=>top.appendChild(el('div',{class:'tl-axis-topcell',style:{width:'calc(var(--tl-col-w) * '+g.n+')'}},[g.m+'월',el('span',{class:'mn'},g.n+'주')])));
+    const curWk=(off>=0&&off<ND)?Math.floor(off/7)+1:-1;
+    WEEKS.forEach(w=>cells.appendChild(el('div',{class:'tl-axis-cell'+(w.w===curWk?' curr':'')},[el('div',{class:'c1'},'W'+w.w), el('div',{class:'c2'},w.mon)])));
+  }
+  axis.appendChild(top); axis.appendChild(cells);
+  const tp=todayPos(ST.view);
+  axis.appendChild(el('div',{class:'tl-today-flag'+(tp.state!=='in'?' edge':''),style:{left:'calc(var(--tl-left-w) + var(--tl-col-w) * '+tp.cols+')'}},tp.label));
+  grid.appendChild(axis);
+
+  function gridBg(){const e=el('div',{class:'grid-bg'});
+    if(ST.view==='day'){
+      e.style.backgroundImage='linear-gradient(to right,var(--border) 1px,transparent 1px),linear-gradient(to right,var(--border-soft) 1px,transparent 1px)';
+      e.style.backgroundSize='calc(var(--tl-col-w) * 7) 100%, var(--tl-col-w) 100%';
+    } else {
+      e.style.backgroundImage='linear-gradient(to right,var(--border-soft) 1px,transparent 1px)';
+      e.style.backgroundSize='var(--tl-col-w) 100%';
+    } return e;}
+
+  const cats=TREE.filter(c=>ST.filter==='all'||c.name===ST.filter);
+  cats.forEach(c=>{
+    const m=CAT[c.name]; const ccol=ST.collapsedCat[c.name];
+    const l1=el('div',{class:'tl-row-label lv1'+(ccol?' collapsed':''),onclick:()=>{ST.collapsedCat[c.name]=!ccol; render();}},[
+      el('span',{class:'tl-arrow'},'▼'), el('div',{class:'tl-cat-icon',style:{background:m.color}},m.icon),
+      el('span',{class:'tl-name'},c.name), el('span',{class:'tl-meta'},'W'+c.sw+'–W'+c.ew)]);
+    const t1=el('div',{class:'tl-row-track lv1'},[gridBg(), groupBar(c,m.color), todayLine()]);
+    grid.appendChild(l1); grid.appendChild(t1);
+    if(ccol) return;
+    c.works.forEach(w=>{
+      const wkey=c.name+'|'+w.name; const wcol=ST.collapsedWork[wkey]; const single=w.subs.length===1;
+      const l2=el('div',{class:'tl-row-label lv2'+(wcol?' collapsed':''),
+        onclick:()=>{ if(single){openModal(w.subs[0]);} else {ST.collapsedWork[wkey]=!wcol; render();} }},[
+        el('span',{class:'tl-arrow'},single?'·':'▼'),
+        el('span',{class:'tl-name',title:w.name},w.name), el('span',{class:'tl-meta'},'W'+w.sw+'–W'+w.ew)]);
+      const t2=el('div',{class:'tl-row-track lv2'},[gridBg(), single?mkBar(w.subs[0],m.color):groupBar(w,m.color,true), todayLine()]);
+      grid.appendChild(l2); grid.appendChild(t2);
+      if(wcol||single) return;
+      w.subs.forEach(r=>{
+        const l3=el('div',{class:'tl-row-label lv3',onclick:()=>openModal(r)},[
+          el('span',{class:'tl-dot',style:{background:m.color}}),
+          el('span',{class:'tl-name',title:r.sub},r.sub),
+          r.gubun?el('span',{class:'tl-badge g-'+r.gubun},r.gubun):null]);
+        const t3=el('div',{class:'tl-row-track'},[gridBg(), mkBar(r,m.color), todayLine()]);
+        grid.appendChild(l3); grid.appendChild(t3);
+      });
+    });
+  });
+  board.appendChild(grid);
 }
 
-// ── events ──
-$("#sort").onchange=e=>{ sortKey=e.target.value; renderGantt(); renderList(); };
-$("#toggleAdd").onclick=()=>$("#addcard").classList.toggle('open');
-$("#doAdd").onclick=addTask;
-$("#tabs").querySelectorAll(".tab").forEach(tb=>{ tb.onclick=()=>{
-  $("#tabs").querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===tb));
-  const t=tb.dataset.tab;
-  $("#panel-gantt").classList.toggle("hidden",t!=="gantt");
-  $("#panel-list").classList.toggle("hidden",t!=="list");
-}; });
-bindLinks($("#f_start"),$("#f_end"),$("#f_dur"));
-
-// ── init ──
-async function init(){
-  load(true);
-  try{ const data=await apiGetAll(); STATE.tasks=(data.tasks||[]).map(norm); STATE.loaded=true;
-    computeStages(); STAGES.forEach(s=>active.add(s));
-    $("#f_stage").innerHTML=STAGES.map(s=>`<option>${s}</option>`).join('');
-    renderFilters(); renderAll(); }
-  catch(err){ $("#errSlot").innerHTML=`<div class="errbox">데이터를 불러오지 못했습니다.<br>${err.message}<br><button onclick="location.reload()">다시 시도</button></div>`; }
-  finally{ load(false); }
+function renderList(board){
+  const WEEKS=curWeeks(); const off=todayOff(); const curWk=(off>=0&&off<ND)?Math.floor(off/7)+1:-1;
+  const list=el('div',{class:'tl-list'});
+  const rows=D.rows.filter(r=>ST.filter==='all'||r.cat===ST.filter);
+  WEEKS.forEach(wk=>{
+    const inWk=rows.filter(r=>r.sw===wk.w).sort((a,b)=>CAT_ORDER.indexOf(a.cat)-CAT_ORDER.indexOf(b.cat));
+    if(!inWk.length) return;
+    const block=el('div',{class:'tl-wk-block'});
+    block.appendChild(el('div',{class:'tl-wk-head'+(wk.w===curWk?' curr':'')},[
+      el('span',{class:'tl-wk-no'},'W'+wk.w),
+      el('span',{class:'tl-wk-date'},wk.mon+'~'+wk.fri+' · '+wk.month+'월'),
+      el('span',{class:'tl-wk-cnt'},inWk.length+'건')]));
+    inWk.forEach(r=>{const m=CAT[r.cat]; const span=r.sw===r.ew?('W'+r.sw):('W'+r.sw+'–W'+r.ew);
+      block.appendChild(el('div',{class:'tl-li',onclick:()=>openModal(r)},[
+        el('div',{class:'tl-cat-icon',style:{background:m.color}},m.icon),
+        el('div',{class:'tl-li-main'},[el('div',{class:'tl-li-sub'},r.sub),el('div',{class:'tl-li-work'},r.cat+' › '+r.work)]),
+        r.gubun?el('span',{class:'tl-badge g-'+r.gubun},r.gubun):null,
+        el('span',{class:'tl-li-span'},span)]));});
+    list.appendChild(block);
+  });
+  board.appendChild(list);
 }
-init();
+
+function openModal(r){
+  const m=CAT[r.cat]||{color:'#888',icon:'?'};
+  const sd=md(addDays(ANCHOR,r.sdi)), ed=md(addDays(ANCHOR,r.edi));
+  const modal=document.getElementById('modal'); modal.innerHTML='';
+  const field=(k,v)=>v?el('div',{class:'tl-field'},[el('div',{class:'k'},k),el('div',{class:'v'},v)]):null;
+  modal.appendChild(el('div',{class:'tl-modal-hd'},[
+    el('button',{class:'tl-modal-x',onclick:closeModal},'×'),
+    el('div',{class:'tl-modal-cat'},[el('div',{class:'tl-cat-icon',style:{background:m.color}},m.icon),r.cat]),
+    el('h3',{},r.sub), el('div',{class:'work'},'작업 · '+r.work)]));
+  const bd=el('div',{class:'tl-modal-bd'});
+  [ field('작업 내용',r.desc),
+    field('기간','W'+r.sw+'–W'+r.ew+'  ('+sd+' ~ '+ed+')'+(r.dur?' · '+r.dur:'')),
+    r.gubun?el('div',{class:'tl-field'},[el('div',{class:'k'},'구분'),el('div',{class:'v'},[el('span',{class:'tl-badge g-'+r.gubun,style:{fontSize:'11px',padding:'2px 8px'}},r.gubun)])]):null,
+    field('상태',r.status), field('선행작업',(r.pre&&r.pre!=='-')?r.pre:'없음'),
+    field('담당',r.owner), field('비고',r.note)
+  ].filter(Boolean).forEach(f=>bd.appendChild(f));
+  modal.appendChild(bd);
+  document.getElementById('modalBg').classList.add('show');}
+function closeModal(){document.getElementById('modalBg').classList.remove('show');}
+document.getElementById('modalBg').addEventListener('click',e=>{if(e.target.id==='modalBg')closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+function updateVisible(){
+  const board=document.getElementById('board'); if(!board)return;
+  const ro=document.getElementById('roView'); if(!ro)return;
+  if(ST.view==='list'){ ro.textContent='주차별 리스트'; return; }
+  const colw=COLW[ST.view]; const sl=board.scrollLeft;
+  const corner=board.querySelector('.tl-axis-corner'); const leftW=corner?corner.offsetWidth:368;
+  const firstCol=Math.floor(sl/colw);
+  const visCols=Math.max(1, Math.floor((board.clientWidth-leftW)/colw));
+  let a,b;
+  if(ST.view==='day'){ a=Math.floor(firstCol/7)+1; b=Math.floor((firstCol+visCols-1)/7)+1; }
+  else { a=firstCol+1; b=firstCol+visCols; }
+  a=Math.max(1,Math.min(NW,a)); b=Math.max(a,Math.min(NW,b));
+  const W=curWeeks();
+  ro.textContent='보임 W'+a+'–W'+b+' · '+W[a-1].mon+'~'+W[b-1].fri;
+}
+
+function render(){
+  renderControls(); renderToolbar();
+  const board=document.getElementById('board'); board.innerHTML='';
+  if(ST.view==='list') renderList(board); else renderGantt(board);
+  updateVisible();
+}
+
+/* ── 구간 이동 팬바 (오른쪽=다음/미래) ── */
+const PAN_FACTOR=2;
+function createPanBar(barEl, board){
+  if(!barEl||!board) return;
+  const knob=barEl.querySelector('[data-dragbar-knob]');
+  let startX=null, startScroll=0, pid=null;
+  function setKnob(cx){if(!knob)return; const r=barEl.getBoundingClientRect(); knob.style.left=Math.max(0,Math.min(r.width,cx-r.left))+'px';}
+  function down(e){if(startX!==null)return; startX=e.clientX; startScroll=board.scrollLeft; pid=e.pointerId; setKnob(e.clientX); barEl.classList.add('is-dragging'); if(barEl.setPointerCapture)barEl.setPointerCapture(e.pointerId); e.preventDefault();}
+  function move(e){if(startX===null||e.pointerId!==pid)return; setKnob(e.clientX); board.scrollLeft=startScroll+(e.clientX-startX)*PAN_FACTOR;}  /* 오른쪽 끌기 → scrollLeft↑ → 다음(미래) */
+  function up(e){if(startX===null)return; if(e.pointerId!=null&&e.pointerId!==pid)return; startX=null; pid=null; barEl.classList.remove('is-dragging');}
+  barEl.addEventListener('pointerdown',down); barEl.addEventListener('pointermove',move);
+  barEl.addEventListener('pointerup',up); barEl.addEventListener('pointercancel',up);
+}
+const boardEl=document.getElementById('board');
+createPanBar(document.getElementById('dragTop'), boardEl);
+createPanBar(document.getElementById('dragBot'), boardEl);
+boardEl.addEventListener('scroll', updateVisible);
+document.getElementById('firstBtn').addEventListener('click', function(){ boardEl.scrollTo({left:0, behavior:'smooth'}); });
+
+renderStats(); render(); scrollToday();
 </script>
 </body>
 </html>
